@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * 提供BeanDefinition的注册能力，没有提供内置工厂，维护了beanDefinitionMap，项目中所有的beanDefinition都维护在这个容器中
  * Simple implementation of the {@link BeanDefinitionRegistry} interface.
  * Provides registry capabilities only, with no factory capabilities built in.
  * Can for example be used for testing bean definition readers.

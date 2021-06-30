@@ -19,6 +19,8 @@ package org.springframework.beans.factory.config;
 import org.springframework.lang.Nullable;
 
 /**
+ * 定义一个共享注册bean的实例
+ * 可以实现BeanFactory接口，实现以统一的方式公开他们的单例管理工具。
  * Interface that defines a registry for shared bean instances.
  * Can be implemented by {@link org.springframework.beans.factory.BeanFactory}
  * implementations in order to expose their singleton management facility
@@ -35,6 +37,11 @@ import org.springframework.lang.Nullable;
 public interface SingletonBeanRegistry {
 
 	/**
+	 * 在给定的 bean 名称下，在 bean 注册表中将给定的现有对象注册为单例。
+	 * 给定的实例应该被完全初始化，注册表不会执行任何初始化回调（特别是，它不会调用 InitializingBean 的 {@code afterPropertiesSet} 方法）。
+	 * 给定的实例也不会收到任何销毁回调（如 DisposableBean 的 {@code destroy} 方法）。
+	 * 在完整的 BeanFactory 中运行时：如果您的 bean 应该接收初始化和/或销毁回调，则注册 bean 定义而不是现有实例。
+	 * 通常在注册表配置期间调用，但也可用于单例的运行时注册。因此，注册表实现应该同步单例访问；如果它支持 BeanFactory 对单例的惰性初始化，无论如何它都必须这样做。
 	 * Register the given existing object as singleton in the bean registry,
 	 * under the given bean name.
 	 * <p>The given instance is supposed to be fully initialized; the registry
@@ -58,6 +65,10 @@ public interface SingletonBeanRegistry {
 	void registerSingleton(String beanName, Object singletonObject);
 
 	/**
+	 * 返回在给定名称下注册的（原始）单例对象。
+	 * 只检查已经实例化的单例；不返回尚未实例化的单例 bean 定义的对象
+	 * 此方法的主要目的是访问手动注册的单例（请参阅 {@link #registerSingleton}）。也可用于以原始方式访问由已创建的 bean 定义定义的单例。
+	 * 此查找方法不知道 FactoryBean 前缀或别名。在获取单例实例之前，您需要先解析规范的 bean 名称。
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Only checks already instantiated singletons; does not return an Object
 	 * for singleton bean definitions which have not been instantiated yet.
@@ -74,6 +85,13 @@ public interface SingletonBeanRegistry {
 	Object getSingleton(String beanName);
 
 	/**
+	 * 提供一个bean名称检查是否在单例容器中存在
+	 * 只检查已经实例化的单例；对于尚未实例化的单例 bean 定义，不返回 {@code true}。
+	 * 此方法的主要目的是检查手动注册的单例（参见 {@link #registerSingleton}）。还可用于检查是否已经创建了由 bean 定义定义的单例。
+	 * 要检查 bean 工厂是否包含具有给定名称的 bean 定义，请使用 ListableBeanFactory 的 {@code containsBeanDefinition}。
+	 * 调用 {@code containsBeanDefinition} 和 {@code containsSingleton} 会返回特定的 bean 工厂是否包含具有给定名称的本地 bean 实例。
+	 * 使用 BeanFactory 的 {@code containsBean} 进行常规检查，工厂是否知道具有给定名称的 bean（无论是手动注册的单例实例还是由 bean 定义创建的），还检查祖先工厂。
+	 * 此查找方法不知道 FactoryBean 前缀或别名。在检查单例状态之前，您需要先解析规范 bean 名称。
 	 * Check if this registry contains a singleton instance with the given name.
 	 * <p>Only checks already instantiated singletons; does not return {@code true}
 	 * for singleton bean definitions which have not been instantiated yet.
@@ -98,6 +116,9 @@ public interface SingletonBeanRegistry {
 	boolean containsSingleton(String beanName);
 
 	/**
+	 * 获取所有的单例bean名称
+	 * 只检查已经实例化的单例；对于尚未实例化的单例 bean 定义，不返回对应的bean名称。
+	 * 此方法的主要目的是检查手动注册的单例bean
 	 * Return the names of singleton beans registered in this registry.
 	 * <p>Only checks already instantiated singletons; does not return names
 	 * for singleton bean definitions which have not been instantiated yet.
@@ -112,6 +133,7 @@ public interface SingletonBeanRegistry {
 	String[] getSingletonNames();
 
 	/**
+	 * 获取单例bean中的单例数量总和
 	 * Return the number of singleton beans registered in this registry.
 	 * <p>Only checks already instantiated singletons; does not count
 	 * singleton bean definitions which have not been instantiated yet.
@@ -126,6 +148,7 @@ public interface SingletonBeanRegistry {
 	int getSingletonCount();
 
 	/**
+	 * 返回此注册表使用的单例互斥锁（用于外部协作者）
 	 * Return the singleton mutex used by this registry (for external collaborators).
 	 * @return the mutex object (never {@code null})
 	 * @since 4.2
