@@ -31,6 +31,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ *
+ * 大多数 bean 工厂要实现的配置接口。除了 {@link org.springframework.beans.factory.BeanFactory}
+ * 接口中的 bean factory client 方法之外，还提供配置 bean factory 的工具。
+ * <p>这个 bean factory 接口不打算在正常的应用程序代码中使用：坚持 {@link org.springframework.beans.factory.BeanFactory}
+ * 或 {@link org.springframework.beans.factory.ListableBeanFactory} 来满足典型需求.
+ * 这个扩展接口只是为了允许框架内部的即插即用和对 bean 工厂配置方法的特殊访问。
+ *
  * Configuration interface to be implemented by most bean factories. Provides
  * facilities to configure a bean factory, in addition to the bean factory
  * client methods in the {@link org.springframework.beans.factory.BeanFactory}
@@ -66,6 +73,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 
 	/**
+	 * 设置BeanFactory的parent
 	 * Set the parent of this bean factory.
 	 * <p>Note that the parent cannot be changed: It should only be set outside
 	 * a constructor if it isn't available at the time of factory instantiation.
@@ -77,6 +85,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException;
 
 	/**
+	 * 设置bean加载器的ClassLoader
+	 *
 	 * Set the class loader to use for loading bean classes.
 	 * Default is the thread context class loader.
 	 * <p>Note that this class loader will only apply to bean definitions
@@ -89,6 +99,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	void setBeanClassLoader(@Nullable ClassLoader beanClassLoader);
 
 	/**
+	 * 返回此工厂的类加载器以加载 bean 类
 	 * Return this factory's class loader for loading bean classes
 	 * (only {@code null} if even the system ClassLoader isn't accessible).
 	 * @see org.springframework.util.ClassUtils#forName(String, ClassLoader)
@@ -97,6 +108,10 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	ClassLoader getBeanClassLoader();
 
 	/**
+	 *
+	 * 指定用于类型匹配目的的临时类加载器。默认为 none，只需使用标准 bean ClassLoader。
+	 * <p>如果涉及<i>加载时编织<i>，通常只指定临时类加载器，以确保尽可能延迟加载实际的bean类。一旦 BeanFactory 完成其引导阶段，临时加载器就会被删除。
+	 *
 	 * Specify a temporary ClassLoader to use for type matching purposes.
 	 * Default is none, simply using the standard bean ClassLoader.
 	 * <p>A temporary ClassLoader is usually just specified if
@@ -116,6 +131,9 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	ClassLoader getTempClassLoader();
 
 	/**
+	 * 设置是否缓存 bean 元数据，例如给定的 bean 定义（以合并方式）和解析的 bean 类。默认开启。
+	 * <p>关闭此标志以启用 bean 定义对象和特定 bean 类的热刷新。如果此标志关闭，则任何 bean 实例的创建都将重新查询 bean 类加载器以获取新解析的类。
+	 *
 	 * Set whether to cache bean metadata such as given bean definitions
 	 * (in merged fashion) and resolved bean classes. Default is on.
 	 * <p>Turn this flag off to enable hot-refreshing of bean definition objects

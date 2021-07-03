@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * 通用的注册bean的实例，允许注册应为注册表的所有调用者共享的单例实例，通过 bean 名称获取。
  * Generic registry for shared bean instances, implementing the
  * {@link org.springframework.beans.factory.config.SingletonBeanRegistry}.
  * Allows for registering singleton instances that should be shared
@@ -195,7 +196,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
-	 * 返回在给定名称下注册的（原始）单例对象。
+	 * 返回在给定名称下注册的（原始）单例对象。 处理bean的三级缓存，
 	 * Return the (raw) singleton object registered under the given name.
 	 * 检查已经实例化的单例，并允许早期引用当前创建的单例（解决循环引用）
 	 * <p>Checks already instantiated singletons and also allows for an early
@@ -207,18 +208,24 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		// Quick check for existing instance without full singleton lock
+		//判断是否在一级缓存，在直接返回
 		Object singletonObject = this.singletonObjects.get(beanName);
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+			//不在一级缓存，且bean正在创建，返回earlySingletonObjects中的bean
 			singletonObject = this.earlySingletonObjects.get(beanName);
 			if (singletonObject == null && allowEarlyReference) {
 				synchronized (this.singletonObjects) {
 					// Consistent creation of early reference within full singleton lock
+					//判断在加锁的条件下是否bean已经创建，创建直接返回
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
+						//获取二级缓存中的bean
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
+							//三级缓存中获取
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
+								//存入三级缓存，保证一个bean至少在一个缓存阶段中
 								singletonObject = singletonFactory.getObject();
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								this.singletonFactories.remove(beanName);

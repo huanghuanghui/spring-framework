@@ -46,8 +46,8 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** Map from alias to canonical name. */
-	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
+	/** 别名容器.alias为bean的别名，@Bean name可以为数组，一个Bean可以有多个别名，可以通过别名取到bean */
+	public final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 
 	@Override
@@ -55,6 +55,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
+			//如果别名与bean名称一致，只会注册一个
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
@@ -62,12 +63,14 @@ public class SimpleAliasRegistry implements AliasRegistry {
 				}
 			}
 			else {
+				//获取注册的bean名称
 				String registeredName = this.aliasMap.get(alias);
 				if (registeredName != null) {
 					if (registeredName.equals(name)) {
 						// An existing alias - no need to re-register
 						return;
 					}
+					//提供一个扩展接口，可以继承这个类，去重写方法，确定是否允许别名覆盖
 					if (!allowAliasOverriding()) {
 						throw new IllegalStateException("Cannot define alias '" + alias + "' for name '" +
 								name + "': It is already registered for name '" + registeredName + "'.");
@@ -77,6 +80,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 								registeredName + "' with new target name '" + name + "'");
 					}
 				}
+				//检查环性别名
 				checkForAliasCircle(name, alias);
 				this.aliasMap.put(alias, name);
 				if (logger.isTraceEnabled()) {
@@ -87,7 +91,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
-	 * Determine whether alias overriding is allowed.
+	 * 确定是否允许别名覆盖
 	 * <p>Default is {@code true}.
 	 */
 	protected boolean allowAliasOverriding() {
@@ -131,7 +135,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
-	 * Transitively retrieve all aliases for the given name.
+	 * 检索给定名称的所有别名
 	 * @param name the target name to find aliases for
 	 * @param result the resulting aliases list
 	 */
@@ -145,6 +149,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
+	 * 处理所有的别名
 	 * Resolve all alias target names and aliases registered in this
 	 * registry, applying the given {@link StringValueResolver} to them.
 	 * <p>The value resolver may for example resolve placeholders
