@@ -388,6 +388,7 @@ public abstract class ClassUtils {
 	}
 
 	/**
+	 * 检查给定的类在给定的上下文中是否是缓存安全的，即它是否由给定的 ClassLoader 或它的父级加载。
 	 * Check whether the given class is cache-safe in the given context,
 	 * i.e. whether it is loaded by the given ClassLoader or a parent of it.
 	 * @param clazz the class to analyze

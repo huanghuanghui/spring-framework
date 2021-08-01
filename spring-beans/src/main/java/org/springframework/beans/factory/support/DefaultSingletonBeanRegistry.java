@@ -216,7 +216,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			if (singletonObject == null && allowEarlyReference) {
 				synchronized (this.singletonObjects) {
 					// Consistent creation of early reference within full singleton lock
-					//判断在加锁的条件下是否bean已经创建，创建直接返回
+					//判断在加锁的条件下是否bean已经创建，创建直接返回 双重检查
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
 						//获取二级缓存中的bean
