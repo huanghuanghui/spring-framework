@@ -109,6 +109,9 @@ class ConstructorResolver {
 
 
 	/**
+	 * “自动装配构造函数”（按类型带有构造函数参数）行为。
+	 * 如果指定了显式构造函数参数值，也适用，将所有剩余参数与来自 bean 工厂的 bean 匹配。
+	 * <p>这对应于构造函数注入：在这种模式下，Spring bean 工厂能够承载期望基于构造函数的依赖项解析的组件。
 	 * "autowire constructor" (with constructor arguments by type) behavior.
 	 * Also applied if explicit constructor argument values are specified,
 	 * matching all remaining arguments with beans from the bean factory.
@@ -360,6 +363,11 @@ class ConstructorResolver {
 	}
 
 	/**
+	 * 使用命名工厂方法实例化 bean。如果 bean 定义参数指定一个类，而不是 factory-bean
+	 * 或者使用依赖注入配置的工厂对象本身的实例变量，则该方法可能是静态的。
+	 * <p>实现需要迭代具有在 RootBeanDefinition 中指定的名称的静态或实例方法（该方法可能被重载）并尝试与参数匹配。
+	 * 我们没有附加到构造函数 args 的类型，所以反复试验是唯一的方法。
+	 * explicitArgs 数组可能包含通过相应的 getBean 方法以编程方式传入的参数值。
 	 * Instantiate the bean using a named factory method. The method may be static, if the
 	 * bean definition parameter specifies a class, rather than a "factory-bean", or
 	 * an instance variable on a factory object itself configured using Dependency Injection.
@@ -790,6 +798,7 @@ class ConstructorResolver {
 
 	/**
 	 * Resolve the prepared arguments stored in the given bean definition.
+	 * 解析存储在给定 bean definition 中的准备好的参数。
 	 */
 	private Object[] resolvePreparedArguments(String beanName, RootBeanDefinition mbd, BeanWrapper bw,
 			Executable executable, Object[] argsToResolve) {

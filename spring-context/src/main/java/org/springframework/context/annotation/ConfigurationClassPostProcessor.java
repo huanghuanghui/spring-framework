@@ -84,6 +84,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ *
+ * {@link BeanFactoryPostProcessor} 用于 {@link Configuration @Configuration} 类的引导处理。
+ * <p>使用 {@code <context:annotation-config>} 或 {@code <context:component-scan>} 时默认注册。
+ * 否则，可以像任何其他 {@link BeanFactoryPostProcessor} 一样手动声明。
+ * <p>这个后处理器是优先级排序的，因为在 {@code @Configuration} 类中声明的任何 {@link Bean @Bean}
+ * 方法都必须在任何其他 {@code BeanFactoryPostProcessor} 执行之前注册其相应的 bean definitions，这一点很重要。
  * {@link BeanFactoryPostProcessor} used for bootstrapping processing of
  * {@link Configuration @Configuration} classes.
  *

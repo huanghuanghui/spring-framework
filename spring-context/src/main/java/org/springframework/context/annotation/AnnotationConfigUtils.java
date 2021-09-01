@@ -40,6 +40,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 实用程序类，允许方便地注册公共
  * Utility class that allows for convenient registration of common
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} and
  * {@link org.springframework.beans.factory.config.BeanFactoryPostProcessor}
@@ -61,7 +62,7 @@ import org.springframework.util.ClassUtils;
 public abstract class AnnotationConfigUtils {
 
 	/**
-	 * The bean name of the internally managed Configuration annotation processor.
+	 * The bean name of the internally managed Configuration annotation processor. 内部管理的配置注释处理器的 bean 名称。
 	 */
 	public static final String CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME =
 			"org.springframework.context.annotation.internalConfigurationAnnotationProcessor";
@@ -131,7 +132,7 @@ public abstract class AnnotationConfigUtils {
 
 
 	/**
-	 * Register all relevant annotation post processors in the given registry.
+	 * Register all relevant annotation post processors in the given registry. 在给定的注册表中注册所有相关的注释后处理器。
 	 * @param registry the registry to operate on
 	 */
 	public static void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {

@@ -90,7 +90,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	}
 
 	/**
-	 * Derive a bean name from one of the annotations on the class.
+	 * Derive a bean name from one of the annotations on the class. 从类上的注解之一派生一个 bean 名称。
 	 * @param annotatedDef the annotation-aware bean definition
 	 * @return the bean name, or {@code null} if none is found
 	 */

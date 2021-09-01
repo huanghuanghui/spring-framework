@@ -637,6 +637,9 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 		DIRECT,
 
 		/**
+		 * 查找所有直接声明的注释以及任何 {@link Inherited @Inherited} 超类注释。
+		 * 此策略仅在与 {@link Class} 类型一起使用时才真正有用，因为 {@link Inherited @Inherited}
+		 * 注释对于所有其他 {@linkplain AnnotatedElement 注释元素}被忽略。此策略不搜索已实现的接口。
 		 * Find all directly declared annotations as well as any
 		 * {@link Inherited @Inherited} superclass annotations.
 		 * <p>This strategy is only really useful when used with {@link Class}

@@ -97,6 +97,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_CONSTRUCTOR = 3;
 
 	/**
+	 * 指示通过自省 bean 类确定适当的自动装配策略的常量。
 	 * Constant that indicates determining an appropriate autowire strategy
 	 * through introspection of the bean class.
 	 * @see #createBean

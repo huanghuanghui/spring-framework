@@ -61,7 +61,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
 				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
-				if (constructorToUse == null) {
+				if (constructorToUse == null) {//无法获取到构造，使用默认构造进行实例化类
 					final Class<?> clazz = bd.getBeanClass();
 					if (clazz.isInterface()) {
 						throw new BeanInstantiationException(clazz, "Specified class is an interface");
@@ -75,7 +75,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
-			return BeanUtils.instantiateClass(constructorToUse);
+			return BeanUtils.instantiateClass(constructorToUse);//实例化类
 		}
 		else {
 			// Must generate CGLIB subclass.

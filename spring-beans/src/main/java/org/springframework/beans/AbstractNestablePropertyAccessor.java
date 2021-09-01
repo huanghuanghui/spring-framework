@@ -46,6 +46,11 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 一个基本的 {@link ConfigurablePropertyAccessor}，为所有典型用例提供必要的基础设施。
+ * <p>如有必要，此访问器会将集合和数组值转换为相应的目标集合或数组。
+ * 处理集合或数组的自定义属性编辑器可以通过 PropertyEditor 的 {@code setValue} 编写，
+ * 也可以通过 {@code setAsText} 针对逗号分隔的字符串编写，因为如果数组本身不是，
+ * 则字符串数组将以这种格式转换可转让。
  * A basic {@link ConfigurablePropertyAccessor} that provides the necessary
  * infrastructure for all typical use cases.
  *

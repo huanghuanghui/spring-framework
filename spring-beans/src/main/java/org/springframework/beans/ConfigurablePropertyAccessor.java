@@ -34,30 +34,35 @@ import org.springframework.lang.Nullable;
 public interface ConfigurablePropertyAccessor extends PropertyAccessor, PropertyEditorRegistry, TypeConverter {
 
 	/**
+	 * 指定用于转换属性值的 Spring 3.0 ConversionService，作为 JavaBeans PropertyEditors 的替代方法。
 	 * Specify a Spring 3.0 ConversionService to use for converting
 	 * property values, as an alternative to JavaBeans PropertyEditors.
 	 */
 	void setConversionService(@Nullable ConversionService conversionService);
 
 	/**
+	 * 返回关联的 ConversionService（如果有）。
 	 * Return the associated ConversionService, if any.
 	 */
 	@Nullable
 	ConversionService getConversionService();
 
 	/**
+	 * 设置在将属性编辑器应用于属性的新值时是否提取旧属性值。
 	 * Set whether to extract the old property value when applying a
 	 * property editor to a new value for a property.
 	 */
 	void setExtractOldValueForEditor(boolean extractOldValueForEditor);
 
 	/**
+	 * 返回在将属性编辑器应用于属性的新值时是否提取旧属性值。
 	 * Return whether to extract the old property value when applying a
 	 * property editor to a new value for a property.
 	 */
 	boolean isExtractOldValueForEditor();
 
 	/**
+	 * 设置此实例是否应尝试“自动增长”包含 {@code null} 值的嵌套路径。 <p>如果 {@code true}，{@code null} 路径位置将填充默认对象值并遍历而不是导致
 	 * Set whether this instance should attempt to "auto-grow" a
 	 * nested path that contains a {@code null} value.
 	 * <p>If {@code true}, a {@code null} path location will be populated
@@ -68,6 +73,7 @@ public interface ConfigurablePropertyAccessor extends PropertyAccessor, Property
 	void setAutoGrowNestedPaths(boolean autoGrowNestedPaths);
 
 	/**
+	 * 返回是否已激活嵌套路径的“自动增长”。
 	 * Return whether "auto-growing" of nested paths has been activated.
 	 */
 	boolean isAutoGrowNestedPaths();

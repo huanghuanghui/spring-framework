@@ -22,6 +22,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
 /**
+ * 可以访问类属性的类的通用接口
  * Common interface for classes that can access named properties
  * (such as bean properties of an object or fields in an object).
  *
@@ -36,12 +37,14 @@ import org.springframework.lang.Nullable;
 public interface PropertyAccessor {
 
 	/**
+	 * 嵌套属性的路径分隔符。遵循正常的 Java 约定：getFoo().getBar() 将是“foo.bar”。
 	 * Path separator for nested properties.
 	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
 	 */
 	String NESTED_PROPERTY_SEPARATOR = ".";
 
 	/**
+	 * 嵌套属性的路径分隔符。遵循正常的 Java 约定：getFoo().getBar() 将是“foo.bar”。
 	 * Path separator for nested properties.
 	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
 	 */
@@ -73,6 +76,7 @@ public interface PropertyAccessor {
 
 
 	/**
+	 * 确定指定的属性是否可读。 <p>如果属性不存在，则返回 {@code false}。
 	 * Determine whether the specified property is readable.
 	 * <p>Returns {@code false} if the property doesn't exist.
 	 * @param propertyName the property to check
@@ -82,6 +86,7 @@ public interface PropertyAccessor {
 	boolean isReadableProperty(String propertyName);
 
 	/**
+	 * 确定指定的属性是否可写。
 	 * Determine whether the specified property is writable.
 	 * <p>Returns {@code false} if the property doesn't exist.
 	 * @param propertyName the property to check
@@ -91,6 +96,7 @@ public interface PropertyAccessor {
 	boolean isWritableProperty(String propertyName);
 
 	/**
+	 * 确定指定属性的属性类型，检查属性描述符或检查索引或映射元素的值。
 	 * Determine the property type for the specified property,
 	 * either checking the property descriptor or checking the value
 	 * in case of an indexed or mapped element.
@@ -105,6 +111,7 @@ public interface PropertyAccessor {
 	Class<?> getPropertyType(String propertyName) throws BeansException;
 
 	/**
+	 * 返回指定属性的类型描述符：最好从 read 方法返回到 write 方法。
 	 * Return a type descriptor for the specified property:
 	 * preferably from the read method, falling back to the write method.
 	 * @param propertyName the property to check
@@ -118,6 +125,7 @@ public interface PropertyAccessor {
 	TypeDescriptor getPropertyTypeDescriptor(String propertyName) throws BeansException;
 
 	/**
+	 * 获取指定属性的当前值。
 	 * Get the current value of the specified property.
 	 * @param propertyName the name of the property to get the value of
 	 * (may be a nested path and/or an indexed/mapped property)
@@ -131,6 +139,7 @@ public interface PropertyAccessor {
 	Object getPropertyValue(String propertyName) throws BeansException;
 
 	/**
+	 * 将指定值设置为当前属性值。
 	 * Set the specified value as current property value.
 	 * @param propertyName the name of the property to set the value of
 	 * (may be a nested path and/or an indexed/mapped property)
@@ -143,6 +152,7 @@ public interface PropertyAccessor {
 	void setPropertyValue(String propertyName, @Nullable Object value) throws BeansException;
 
 	/**
+	 * 将指定值设置为当前属性值。
 	 * Set the specified value as current property value.
 	 * @param pv an object containing the new property value
 	 * @throws InvalidPropertyException if there is no such property or
@@ -153,6 +163,7 @@ public interface PropertyAccessor {
 	void setPropertyValue(PropertyValue pv) throws BeansException;
 
 	/**
+	 * 从地图执行批量更新。 <p>来自 PropertyValues 的批量更新功能更强大：提供此方法是为了方便。行为将与 {@link #setPropertyValues(PropertyValues)} 方法相同。
 	 * Perform a batch update from a Map.
 	 * <p>Bulk updates from PropertyValues are more powerful: This method is
 	 * provided for convenience. Behavior will be identical to that of
@@ -169,6 +180,10 @@ public interface PropertyAccessor {
 	void setPropertyValues(Map<?, ?> map) throws BeansException;
 
 	/**
+	 * 执行批量更新的首选方式。 <p>请注意，执行批量更新与执行单次更新不同，
+	 * 如果出现<b>可恢复<b>错误（例如类型不匹配，但<b>不匹配），此类的实现将继续更新属性<b> 无效的字段名称等），
+	 * 抛出包含所有单个错误的 {@link PropertyBatchUpdateException}。稍后可以检查此异常以查看所有绑定错误。
+	 * 成功更新的属性保持更改。 <p>不允许未知字段或无效字段。
 	 * The preferred way to perform a batch update.
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties
@@ -190,6 +205,9 @@ public interface PropertyAccessor {
 	void setPropertyValues(PropertyValues pvs) throws BeansException;
 
 	/**
+	 * 执行批量更新，更好地控制行为。 <p>请注意，执行批量更新与执行单次更新不同，
+	 * 如果出现<b>可恢复<b>错误（例如类型不匹配，但<b>不匹配），此类的实现将继续更新属性<b> 无效的字段名称等），
+	 * 抛出包含所有单个错误的 {@link PropertyBatchUpdateException}。稍后可以检查此异常以查看所有绑定错误。成功更新的属性保持更改。
 	 * Perform a batch update with more control over behavior.
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties
@@ -212,6 +230,10 @@ public interface PropertyAccessor {
 			throws BeansException;
 
 	/**
+	 * 在完全控制行为的情况下执行批量更新。 <p>请注意，执行批量更新与执行单次更新不同，
+	 * 如果出现<b>可恢复<b>错误（例如类型不匹配，但<b>不匹配），此类的实现将继续更新属性<b> 无效的字段名称等），
+	 * 抛出包含所有单个错误的 {@link PropertyBatchUpdateException}。
+	 * 稍后可以检查此异常以查看所有绑定错误。成功更新的属性保持更改。
 	 * Perform a batch update with full control over behavior.
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties

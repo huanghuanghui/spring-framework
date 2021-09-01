@@ -39,6 +39,35 @@ import org.springframework.lang.Nullable;
  * 与 {@link ListableBeanFactory} 中的方法相反，此接口中的所有操作还将检查父工厂是否为 {@link HierarchicalBeanFactory}。
  * 如果在此工厂实例中未找到 bean，则会询问直接父工厂。此工厂实例中的 Bean 应该覆盖任何父工厂中的同名 Bean。
  *
+ * Bean 工厂实现应尽可能支持标准的 Bean 生命周期接口。全套初始化方法及其标准顺序是：
+ * <li>BeanNameAware's {@code setBeanName}
+ *  * <li>BeanClassLoaderAware's {@code setBeanClassLoader}
+ *  * <li>BeanFactoryAware's {@code setBeanFactory}
+ *  * <li>EnvironmentAware's {@code setEnvironment}
+ *  * <li>EmbeddedValueResolverAware's {@code setEmbeddedValueResolver}
+ *  * <li>ResourceLoaderAware's {@code setResourceLoader}
+ *  * (only applicable when running in an application context)
+ *  * <li>ApplicationEventPublisherAware's {@code setApplicationEventPublisher}
+ *  * (only applicable when running in an application context)
+ *  * <li>MessageSourceAware's {@code setMessageSource}
+ *  * (only applicable when running in an application context)
+ *  * <li>ApplicationContextAware's {@code setApplicationContext}
+ *  * (only applicable when running in an application context)
+ *  * <li>ServletContextAware's {@code setServletContext}
+ *  * (only applicable when running in a web application context)
+ *  * <li>{@code postProcessBeforeInitialization} methods of BeanPostProcessors
+ *  * <li>InitializingBean's {@code afterPropertiesSet}
+ *  * <li>a custom init-method definition
+ *  * <li>{@code postProcessAfterInitialization} methods of BeanPostProcessors
+ *  * </ol>
+ *
+ *   * <p>在关闭 bean 工厂时，以下生命周期方法适用：
+ *  * <ol>
+ *  * <li>{@code postProcessBeforeDestruction} methods of DestructionAwareBeanPostProcessors
+ *  * <li>DisposableBean's {@code destroy}
+ *  * <li>a custom destroy-method definition
+ *  * </ol>
+ *
  * The root interface for accessing a Spring bean container.
  *
  * <p>This is the basic client view of a bean container;
@@ -169,7 +198,9 @@ public interface BeanFactory {
 	Object getBean(String name) throws BeansException;
 
 	/**
-	 * 返回指定 bean 的一个实例，该实例可以是共享的，也可以是独立的。 <p>行为与 {@link #getBean(String)} 相同，
+	 * 返回指定 bean 的一个实例，该实例可以是共享的，也可以是独立的。
+	 * 获取的bean会被转换为requiredType类型的bean，如果获取的bean不为requiredType的父类，则抛出异常，例如传入一个
+	 * <p>行为与 {@link #getBean(String)} 相同，
 	 * 但如果 bean 不是所需类型，则通过抛出 BeanNotOfRequiredTypeException 来提供类型安全措施。
 	 * 这意味着不能在正确投射结果时抛出 ClassCastException，就像 {@link #getBean(String)} 可能发生的那样。
 	 * <p>将别名翻译回相应的规范 bean 名称。 <p>如果在这个工厂实例中找不到bean，会询问父工厂
@@ -359,6 +390,7 @@ public interface BeanFactory {
 	/**
 	 *
 	 * 检查具有给定名称的 bean 是否与指定的类型匹配。
+	 * beanName对应的bean是否为输入的typeToMatch class的子类
 	 * 更具体地说，检查对给定名称的 {@link #getBean} 调用是否会返回可分配给指定目标类型的对象。
 	 * <p>将别名翻译回相应的规范 bean 名称。 <p>如果在这个工厂实例中找不到bean，会询问父工厂。
 	 *
@@ -382,6 +414,7 @@ public interface BeanFactory {
 	 *
 	 * 检查具有给定名称的 bean 是否与指定的类型匹配。
 	 * 更具体地说，检查对给定名称的 {@link #getBean} 调用是否会返回可分配给指定目标类型的对象。
+	 * beanName对应的bean是否为输入的typeToMatch class的子类
 	 * <p>将别名翻译回相应的规范 bean 名称。 <p>如果在这个工厂实例中找不到bean，会询问父工厂。
 	 * Check whether the bean with the given name matches the specified type.
 	 * More specifically, check whether a {@link #getBean} call for the given name

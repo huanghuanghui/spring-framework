@@ -251,6 +251,7 @@ public class AnnotatedBeanDefinitionReader {
 			@Nullable BeanDefinitionCustomizer[] customizers) {
 
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+		//扫描类上的所有注解，存入缓存，AnnotationsScanner.getDeclaredAnnotations.declaredAnnotationCache，判断是否有@Condition，有的话，不符合bean创建规则，跳过bean创建
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}

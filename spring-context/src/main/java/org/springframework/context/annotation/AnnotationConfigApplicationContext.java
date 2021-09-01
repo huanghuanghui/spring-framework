@@ -89,6 +89,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
+		//AnnotationsScanner.getDeclaredAnnotations() 获取类上的所有注解，存入缓存declaredAnnotationCache，完成注解扫描
 		register(componentClasses);
 		refresh();
 	}

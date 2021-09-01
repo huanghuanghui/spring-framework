@@ -544,7 +544,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Return the list of statically specified ApplicationListeners.
+	 * Return the list of statically specified ApplicationListeners.返回静态指定的 ApplicationListener 列表。
 	 */
 	public Collection<ApplicationListener<?>> getApplicationListeners() {
 		return this.applicationListeners;
@@ -570,6 +570,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
+				//调用在上下文中注册为 bean 的工厂处理器。
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
@@ -750,6 +751,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
 	 * respecting explicit order if given.
 	 * <p>Must be called before singleton instantiation.
+	 * 实例化并调用所有已注册的 BeanFactoryPostProcessor bean，如果给出，则遵守显式顺序。 <p>必须在单例实例化之前调用。
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());

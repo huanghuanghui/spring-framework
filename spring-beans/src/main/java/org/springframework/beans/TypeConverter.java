@@ -23,6 +23,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
 /**
+ * 定义类型转换方法的接口。通常（但不一定）与 {@link PropertyEditorRegistry} 接口一起实现。
  * Interface that defines type conversion methods. Typically (but not necessarily)
  * implemented in conjunction with the {@link PropertyEditorRegistry} interface.
  *
@@ -38,6 +39,9 @@ import org.springframework.lang.Nullable;
 public interface TypeConverter {
 
 	/**
+	 * 将值转换为所需的类型（如有必要从字符串）。 <p>从 String 到任何类型的转换通常会使用 PropertyEditor
+	 * 类的 {@code setAsText} 方法，或 ConversionService 中的 Spring Converter。
+	 *
 	 * Convert the value to the required type (if necessary from a String).
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
@@ -55,6 +59,8 @@ public interface TypeConverter {
 	<T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType) throws TypeMismatchException;
 
 	/**
+	 * 将值转换为所需的类型（如有必要从字符串）。
+	 * <p>从 String 到任何类型的转换通常会使用 PropertyEditor 类的 {@code setAsText} 方法，或 ConversionService 中的 Spring Converter。
 	 * Convert the value to the required type (if necessary from a String).
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.

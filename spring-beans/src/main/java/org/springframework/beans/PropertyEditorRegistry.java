@@ -21,6 +21,7 @@ import java.beans.PropertyEditor;
 import org.springframework.lang.Nullable;
 
 /**
+ * 封装用于注册 JavaBeans {@link PropertyEditor PropertyEditors} 的方法。这是 {@link PropertyEditorRegistrar} 操作的核心接口。
  * Encapsulates methods for registering JavaBeans {@link PropertyEditor PropertyEditors}.
  * This is the central interface that a {@link PropertyEditorRegistrar} operates on.
  *
@@ -37,6 +38,7 @@ import org.springframework.lang.Nullable;
 public interface PropertyEditorRegistry {
 
 	/**
+	 * 为给定类型的所有属性注册给定的自定义属性编辑器。
 	 * Register the given custom property editor for all properties of the given type.
 	 * @param requiredType the type of the property
 	 * @param propertyEditor the editor to register
@@ -44,6 +46,17 @@ public interface PropertyEditorRegistry {
 	void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor);
 
 	/**
+	 * 为给定的类型和属性或给定类型的所有属性注册给定的自定义属性编辑器。
+	 * <p>如果属性路径表示数组或集合属性，则编辑器将应用于数组集合本身（{@link PropertyEditor} 必须创建数组或集合值）
+	 * 或每个元素（{@code PropertyEditor } 必须创建元素类型），具体取决于指定的所需类型。
+	 * <p>注意：每个属性路径仅支持一个注册的自定义编辑器。
+	 * 在 Collectionarray 的情况下，不要为 Collectionarray 和同一属性上的每个元素注册编辑器。
+	 * <p>例如，如果您想为“items[n].quantity”（对于所有值 n）注册一个编辑器，
+	 * 您可以使用“items.quantity”作为此方法的“propertyPath”参数的值。
+	 * @param requiredType 属性的类型。如果给出了属性，则这可能是 {@code null}，
+	 * 但在任何情况下都应指定，特别是在 Collection 的情况下 -
+	 * 明确编辑器是应该应用于整个 Collection 本身还是应用于其中的每个条目。
+	 * 所以作为一般规则：<b>如果是 Collectionarray，请不要在此处指定 {@code null}！<b>
 	 * Register the given custom property editor for the given type and
 	 * property, or for all properties of the given type.
 	 * <p>If the property path denotes an array or Collection property,
@@ -69,6 +82,7 @@ public interface PropertyEditorRegistry {
 	void registerCustomEditor(@Nullable Class<?> requiredType, @Nullable String propertyPath, PropertyEditor propertyEditor);
 
 	/**
+	 * 为给定的类型和属性找到一个自定义属性编辑器。
 	 * Find a custom property editor for the given type and property.
 	 * @param requiredType the type of the property (can be {@code null} if a property
 	 * is given but should be specified in any case for consistency checking)

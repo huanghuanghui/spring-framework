@@ -193,7 +193,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	private boolean enforceDestroyMethod = true;
 
-	private boolean synthetic = false;
+	private boolean synthetic = false;//合成的
 
 	private int role = BeanDefinition.ROLE_APPLICATION;
 
@@ -402,6 +402,13 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * 返回 bean 定义的指定类（假设它已经被解析）。 <p><b>注意：<b>这是 bean 元数据定义中声明的初始类引用，
+	 * 可能与声明的工厂方法或 {@link org.springframework.beans.factory.FactoryBean} 结合使用，
+	 * 这可能导致到 bean 的不同运行时类型，或者在实例级工厂方法的情况下根本没有设置
+	 * （通过 {@link #getFactoryBeanName()} 解决）。 <b>请勿将其用于任意 bean 定义的运行时类型内省。
+	 * <b> 了解特定 bean 的实际运行时类型的推荐方法是调用 {@link org.springframework.beans.factory.BeanFactory#getType}
+	 * 对于指定的 bean 名称；这考虑了上述所有情况，并返回 {@link org.springframework.beans.factory.BeanFactory#getBean}
+	 * 调用将为相同的 bean 名称返回的对象类型。
 	 * Return the specified class of the bean definition (assuming it is resolved already).
 	 * <p><b>NOTE:</b> This is an initial class reference as declared in the bean metadata
 	 * definition, potentially combined with a declared factory method or a
@@ -1155,6 +1162,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * 验证并准备为此 bean 定义的方法覆盖。检查具有指定名称的方法是否存在。
 	 * Validate and prepare the method overrides defined for this bean.
 	 * Checks for existence of a method with the specified name.
 	 * @throws BeanDefinitionValidationException in case of validation failure

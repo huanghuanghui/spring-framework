@@ -203,6 +203,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * reference to a currently created singleton (resolving a circular reference).
 	 * @param beanName the name of the bean to look for
 	 * @param allowEarlyReference whether early references should be created or not
+	 *  allowEarlyReference参数的含义是：是否允许获取早期依赖
 	 * @return the registered singleton object, or {@code null} if none found
 	 */
 	@Nullable
@@ -222,12 +223,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						//获取二级缓存中的bean
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
-							//三级缓存中获取
+							//三级缓存中获取 三级缓存存储的是，如何获取这个对象的逻辑，是一个supplier
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
-								//存入三级缓存，保证一个bean至少在一个缓存阶段中
+								//bean在三级缓存中存在
 								singletonObject = singletonFactory.getObject();
+								//存入二级缓存，保证一个bean至少在一个缓存阶段中，现在存的是提前曝光的bean
 								this.earlySingletonObjects.put(beanName, singletonObject);
+								//在三级缓存中移除
 								this.singletonFactories.remove(beanName);
 							}
 						}
@@ -373,6 +376,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 返回指定的单例 bean 当前是否正在创建中（在整个工厂内）。
 	 * Return whether the specified singleton bean is currently in creation
 	 * (within the entire factory).
 	 * @param beanName the name of the bean
