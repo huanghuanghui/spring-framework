@@ -50,6 +50,12 @@ public interface ConfigurableListableBeanFactory
 	void ignoreDependencyType(Class<?> type);
 
 	/**
+	 *
+	 * 自动装配时忽略指定接口或类的依赖注入，使用ignoreDependencyType已经足够
+	 * ignoreDependencyInterface的真正意思是在自动装配时忽略指定接口的实现类中，对外的依赖。
+	 *
+	 * 链接：https://www.jianshu.com/p/3c7e0608ff1f
+	 *
 	 * Ignore the given dependency interface for autowiring.
 	 * <p>This will typically be used by application contexts to register
 	 * dependencies that are resolved in other ways, like BeanFactory through

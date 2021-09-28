@@ -66,6 +66,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext() {
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
+		//生成开天辟地的6个类的BeanDefinition
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		createAnnotatedBeanDefReader.end();
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
@@ -88,8 +89,20 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		/**
+		 * 这里由于他有父类，所以会先调用父类的构造方法: 看源码得知初始化了DefaultListableBeanFactory
+		 *
+		 * 然后才调用自己的构造方法:
+		 * 1.创建一个读取注解的Bean定义读取器 将bean读取完后，会调用DefaultListableBeanFactory注册这个bean
+		 *
+		 * 	AnnotatedBeanDefinitionReader 添加了开天辟地的6个BeanPostProcessor 的 bean definition
+		 * 	ConfigClassPostProcessor 扫描 @Configuration @ComponentScans @ComponentScan @Import 注解扫描
+		 * 	AutowiredAnnotationBeanPostProcessor 处理Autowired 自动注入的BeanPostProcessor
+		 * 	CommonAnnotationBeanPostProcessor 处理@Resource
+		 * 	EventListenerMethodProcessor/DefaultEventListenerFactory 事件监听
+		 */
 		this();
-		//AnnotationsScanner.getDeclaredAnnotations() 获取类上的所有注解，存入缓存declaredAnnotationCache，完成注解扫描
+		//AnnotationsScanner.getDeclaredAnnotations() 获取类上的所有注解，存入缓存declaredAnnotationCache，完成注解扫描，并把componentClasses类加入bean definition
 		register(componentClasses);
 		refresh();
 	}
@@ -166,6 +179,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		Assert.notEmpty(componentClasses, "At least one component class must be specified");
 		StartupStep registerComponentClass = this.getApplicationStartup().start("spring.context.component-classes.register")
 				.tag("classes", () -> Arrays.toString(componentClasses));
+		//注册最初扫描类的beanDefinition
 		this.reader.register(componentClasses);
 		registerComponentClass.end();
 	}

@@ -60,11 +60,15 @@ import org.springframework.lang.Nullable;
 public interface Scope {
 
 	/**
+	 * 如果在底层存储机制中找不到，则从底层范围返回具有给定名称的对象，
+	 * {@link org.springframework.beans.factory.ObjectFactory#getObject() 创建它}。
+	 * <p>这是 Scope 的核心操作，也是唯一绝对需要的操作。
 	 * Return the object with the given name from the underlying scope,
 	 * {@link org.springframework.beans.factory.ObjectFactory#getObject() creating it}
 	 * if not found in the underlying storage mechanism.
 	 * <p>This is the central operation of a Scope, and the only operation
 	 * that is absolutely required.
+	 *
 	 * @param name the name of the object to retrieve
 	 * @param objectFactory the {@link ObjectFactory} to use to create the scoped
 	 * object if it is not present in the underlying storage mechanism

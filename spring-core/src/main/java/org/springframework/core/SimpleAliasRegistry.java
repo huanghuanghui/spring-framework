@@ -50,6 +50,11 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	public final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 
+	/**
+	 * 注册别名，不能注册name和alias正好相反的数据，以及name和alias相等的数据，这样会导致别名的循环依赖
+	 * @param name 提供的名称
+	 * @param alias 注册进spring bean容器的别名
+	 */
 	@Override
 	public void registerAlias(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
@@ -135,7 +140,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
-	 * 检索给定名称的所有别名
+	 * 检索给定名称的所有别名，将所有的别名进行循环放入，这里是一个递归
 	 * @param name the target name to find aliases for
 	 * @param result the resulting aliases list
 	 */
@@ -209,6 +214,10 @@ public class SimpleAliasRegistry implements AliasRegistry {
 
 	/**
 	 * 确定原始名称，将别名解析为规范名称。
+	 * 传入的可能是别名，需要去aliasMap中获取对应的beanName，用来获取bean，aliasMap key为alias，name为bean name
+	 * 循环aliasMap使用key一直往后找value，找不到value，那么就代表这个value，就是标准的bean name
+	 * 这个方法其实对于我们都不写alias的来说，根本没用，没有alias，aliasMaps都是空的，
+	 * 传个beanName进去，都是取不到值的，返回的标准beanName就是我们传入的值
 	 * Determine the raw name, resolving aliases to canonical names.
 	 * @param name the user-specified name
 	 * @return the transformed name
@@ -218,6 +227,8 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		// Handle aliasing...
 		String resolvedName;
 		do {
+			//如果传入的是别名，需要递归调用，取出标准的bean name，标准的bean name 在aliasMap中，
+			// 不能注册name和alias正好相反的数据，以及name和alias相等的数据
 			resolvedName = this.aliasMap.get(canonicalName);
 			if (resolvedName != null) {
 				canonicalName = resolvedName;

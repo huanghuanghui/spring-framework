@@ -173,14 +173,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/** List of bean definition names, in registration order. */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
-	/** List of names of manually registered singletons, in registration order. */
+	/** List of names of manually registered singletons, in registration order. 按注册顺序手动注册的singleton的名称列表。 */
 	private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
 	/** Cached array of bean definition names in case of frozen configuration. */
 	@Nullable
 	private volatile String[] frozenBeanDefinitionNames;
 
-	/** Whether bean definition metadata may be cached for all beans. */
+	/** Whether bean definition metadata may be cached for all beans. 是否可以为所有 bean 缓存 bean 定义元数据。*/
 	private volatile boolean configurationFrozen;
 
 
@@ -927,7 +927,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
-					getBean(beanName);
+					getBean(beanName);//获取bean，其实是校验bean是否已经创建，如果没有创建，那个会调用doCreateBean创建bean对象
 				}
 			}
 		}
@@ -1071,6 +1071,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
+	 *
+	 * 重置给定 bean 的所有 bean 定义缓存，包括从它派生的 bean 缓存。
+	 * <p>在现有 bean 定义被替换或删除后调用，在给定 bean 和以给定 bean 作为父级的所有 bean 定义上触发
+	 * {@link #clearMergedBeanDefinition}、{@link #destroySingleton} 和
+	 * {@link MergedBeanDefinitionPostProcessor#resetBeanDefinition}。
+	 *
+	 *
 	 * Reset all bean definition caches for the given bean,
 	 * including the caches of beans that are derived from it.
 	 * <p>Called after an existing bean definition has been replaced or removed,

@@ -561,7 +561,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			// Prepare the bean factory for use in this context.
+			// 准备BeanFactory
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -570,10 +570,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
-				//调用在上下文中注册为 bean 的工厂处理器。
+				//调用在上下文中注册为 bean 的工厂处理器。ConfigurationClassPostProcessor/EventListener 通过getBean，
+				// 将实现了对应的BeanProcessors的对象，生成Bean
+				//扩展点在第一段代码，我们可以自己往beanFactoryPostProcessors add对象，让我们的自己注册的beanFactory最先执行
 				invokeBeanFactoryPostProcessors(beanFactory);
 
-				// Register bean processors that intercept bean creation.
+				// Register bean processors that intercept bean creation.注册拦截 bean 创建的 bean 处理器。
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
@@ -691,12 +693,51 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Tell the internal bean factory to use the context's class loader etc.
 		beanFactory.setBeanClassLoader(getClassLoader());
 		if (!shouldIgnoreSpel) {
+			/**
+			 * 添加bean表达式解释器，为了能够让我们的beanFactory去解析bean表达式
+			 * 模板默认以前缀“#{”开头，以后缀“}”结尾【@Value("#{}")与@Value("${}")】
+			 * 可以修改默认额前缀后缀
+			 * 通过beanFactory.getBeanExpressionResolver()获得BeanExpressionResolver
+			 * 然后resolver.setExpressionPrefix("%{");resolver.setExpressionSuffix("}");
+			 *
+			 * 那么什么时候用到这个解析器？
+			 * 就是在Bean进行初始化后会有属性填充的一步,方法如下:
+			 * protected void populateBean(String beanName, RootBeanDefinition mbd, BeanWrapper bw) {
+			 * 	//属性填充
+			 * 	applyPropertyValues(beanName, mbd, bw, pvs);
+			 * }
+			 * 最终会通过AbstractBeanFactory中的evaluateBeanDefinitionString方法进行解析
+			 * 然后这时候就进到StandardBeanExpressionResolver中的evaluate方法中进行解析了
+			 *
+			 * - @Value(“#{}”) 表示SpEl表达式通常用来获取bean的属性，或者调用bean的某个方法。当然还有可以表示常量 @Value(“#{dataSource.url}”
+			 * - 用 @Value(“${xxxx}”)注解从配置文件读取值的用法
+			 */
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
+		/**
+		 * spring内部的属性编辑器
+		 * 添加PropertyEditor属性编辑器（可以将我们的property动态设置为bean里面对应的属性类型）
+		 * 比如：property赋值的是路径名(classpath/spring.xml)，而对应bean属性设置的是Resource，则有spring的ResourceEditor完成转换
+		 * springframework-bean下的propertyEditors包下有很多spring自带的属性编辑器
+		 * 其中刚才提到的ResourceEditor在springframework-core下的io包里面
+		 *
+		 * 可以自定义属性编辑器，通过实现PropertyEditorSupport接口，spring中自带的属性编辑器也是这么做的
+		 * 使用ApplicationContext,只需要在配置文件中通过CustomEditorConfigurer注册即可。
+		 * CustomEditorConfigurer实现了BeanFactoryPostProcessor接口，因而是一个Bean工厂后置处理器
+		 * 在Spring容器中加载配置文件并生成BeanDefinition后会被执行。CustomEditorConfigurer在容器启动时有机会注册自定义的属性编辑器
+		 */
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
+		/**
+		 * 添加一个BPP
+		 * ApplicationContextAwareProcessor：能够在bean中获得各种*Aware
+		 */
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		/**
+		 * 跳过以下6个属性的自动注入
+		 * 因为在ApplicationContextAwareProcessor中已经完成了手动注入
+		 */
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -705,8 +746,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.ignoreDependencyInterface(ApplicationContextAware.class);
 		beanFactory.ignoreDependencyInterface(ApplicationStartupAware.class);
 
-		// BeanFactory interface not registered as resolvable type in a plain factory.
-		// MessageSource registered (and found for autowiring) as a bean.
+		/**
+		 * 注册几个自动装配相关的类和实例
+		 * 在应用代码就可以通过类型自动装配把工厂实例和ApplicationContext实例设置到自定义bean的属性中
+		 *
+		 * 例如：这几个属性都会被自动设置，虽然没有在显示的在bean定义xml中注入它们
+		 * private BeanFactory beanFactory;
+		 * private ResourceLoader resourceLoader;
+		 * private ApplicationEventPublisher appEventPublisher;
+		 * private ApplicationContext appContext;
+		 */
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
@@ -901,8 +950,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Initialize conversion service for this context.
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
-			beanFactory.setConversionService(
-					beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
+			beanFactory.setConversionService(beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
 		}
 
 		// Register a default embedded value resolver if no BeanFactoryPostProcessor
@@ -924,7 +972,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 
-		// Instantiate all remaining (non-lazy-init) singletons.
+		// Instantiate all remaining (non-lazy-init) singletons.实例化所有剩余的（非延迟初始化）单例。
 		beanFactory.preInstantiateSingletons();
 	}
 

@@ -100,10 +100,15 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// 首先，调用实现 PriorityOrdered 的 BeanDefinitionRegistryPostProcessors。
-			// 从this初始化的beanDefinitionNames获取BeanDefinitionRegistryPostProcessor的子类
+			// 调用getBeanNamesForType就会将beanDefinitionNames中的beanDefinition存入mergedBeanDefinitions
+			// 从this初始化的beanDefinitionNames获取BeanDefinitionRegistryPostProcessor的子类 获取到ConfigClassPostProcessors
+			//spring不建议自己去干预BeanFactory，所以没有自定义实现BeanFactoryPostProcessors的类注册，只会取到ConfigClassPostProcessors，
 			String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+					//getBean 会出发doCreateBean，传入的ppName为postProcessorName，是前面定义的BeanDefinitionName，
+					// 例如ConfigClassPostProcessors传入的BeanDefinitionName为org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+					//进入getBean，transformedBeanName会将ppName转为标准的Bean name，去除FactoryBean的前缀&，将传入的全类名，转为shortName，为类名首字母小写
 					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
 					processedBeans.add(ppName);
 				}
@@ -221,6 +226,7 @@ final class PostProcessorRegistrationDelegate {
 		// to ensure that your proposal does not result in a breaking change:
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
+		//获取BeanPostProcessor的所有子类 从bean definition maps中获得所有已经注册的BeanDefinition，for循环取出BeanPostProcessor的子类
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when

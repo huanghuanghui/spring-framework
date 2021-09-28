@@ -71,6 +71,8 @@ public interface BeanPostProcessor {
 
 	/**
 	 *
+	 * 在Bean的自定义初始化方法之前执行
+	 *
 	 * 将此 {@code BeanPostProcessor} 应用于给定的新 bean 实例
 	 * <i>before<i> 任何 bean 初始化回调（如 InitializingBean 的 {@code afterPropertiesSet} 或自定义初始化方法）。
 	 * bean 已经被填充了属性值。返回的 bean 实例可能是原始实例的包装器。 <p>默认实现按原样返回给定的 {@code bean}。
@@ -94,6 +96,9 @@ public interface BeanPostProcessor {
 	}
 
 	/**
+	 *
+	 * 在Bean的自定义初始化方法执行完成之后执行
+	 *
 	 * 将此 {@code BeanPostProcessor} 应用于给定的新 bean 实例
 	 * <i>after<i> 任何 bean 初始化回调（如 InitializingBean 的 {@code afterPropertiesSet} 或自定义初始化方法）。
 	 * bean 已经被填充了属性值。返回的 bean 实例可能是原始实例的包装器。

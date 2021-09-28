@@ -448,6 +448,8 @@ abstract class AnnotationsScanner {
 			cached = true;
 		}
 		else {
+			//返回 <em>直接存在于该元素上的注释<em>。此方法忽略继承的注释。如果该元素上没有<em>直接存在的<em>注解，
+			// 则返回值是一个长度为0的数组。该方法的调用者可以自由修改返回的数组；它不会影响返回给其他调用者的数组。 @return 注释直接出现在这个元素上
 			annotations = source.getDeclaredAnnotations();
 			if (annotations.length != 0) {
 				boolean allIgnored = true;

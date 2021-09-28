@@ -149,34 +149,28 @@ class EnableCachingTests extends AbstractCacheAnnotationTests {
 		public CacheManager cacheManager() {
 			return CacheTestUtils.createSimpleCacheManager("testCache", "primary", "secondary");
 		}
-
 		@Bean
 		public CacheableService<?> service() {
 			return new DefaultCacheableService();
 		}
-
 		@Bean
 		public CacheableService<?> classService() {
 			return new AnnotatedClassCacheableService();
 		}
-
 		@Override
 		@Bean
 		public KeyGenerator keyGenerator() {
 			return new SomeKeyGenerator();
 		}
-
 		@Override
 		@Bean
 		public CacheErrorHandler errorHandler() {
 			return new SimpleCacheErrorHandler();
 		}
-
 		@Bean
 		public KeyGenerator customKeyGenerator() {
 			return new SomeCustomKeyGenerator();
 		}
-
 		@Bean
 		public CacheManager customCacheManager() {
 			return CacheTestUtils.createSimpleCacheManager("testCache");

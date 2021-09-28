@@ -59,7 +59,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		if (ApplicationListener.class.isAssignableFrom(beanType)) {
+		if (ApplicationListener.class.isAssignableFrom(beanType)) {//ApplicationListener是否是其子类
 			this.singletonNames.put(beanName, beanDefinition.isSingleton());
 		}
 	}

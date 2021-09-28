@@ -31,6 +31,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * {@link BeanPostProcessor} 实现，为实现 {@code ApplicationContext} 的 bean 提供 {@code ApplicationContext}、
+ * {@link org.springframework.core.env.Environment Environment} 或 {@link StringValueResolver}
+ * link EnvironmentAware}、{@link EmbeddedValueResolverAware}、{@link ResourceLoaderAware}、
+ * {@link ApplicationEventPublisherAware}、{@link MessageSourceAware} 和或 {@link ApplicationContextAware} 接口。
+ * <p>实现的接口按照上面提到的顺序得到满足。 <p>应用程序上下文将自动向其底层 bean 工厂注册。
+ * 应用程序不直接使用它。
  * {@link BeanPostProcessor} implementation that supplies the {@code ApplicationContext},
  * {@link org.springframework.core.env.Environment Environment}, or
  * {@link StringValueResolver} for the {@code ApplicationContext} to beans that

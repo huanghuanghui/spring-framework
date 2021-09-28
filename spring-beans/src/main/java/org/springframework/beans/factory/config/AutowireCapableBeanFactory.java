@@ -62,6 +62,7 @@ import org.springframework.lang.Nullable;
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
 	/**
+	 * 表示没有外部定义的自动装配的常量。请注意，仍将应用 BeanFactoryAware 等和注解驱动的注入。
 	 * Constant that indicates no externally defined autowiring. Note that
 	 * BeanFactoryAware etc and annotation-driven injection will still be applied.
 	 * @see #createBean
@@ -71,6 +72,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_NO = 0;
 
 	/**
+	 * 按名称指示自动装配 bean 属性的常量（适用于所有 bean 属性设置器）。
+	 *
 	 * Constant that indicates autowiring bean properties by name
 	 * (applying to all bean property setters).
 	 * @see #createBean
@@ -80,6 +83,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_BY_NAME = 1;
 
 	/**
+	 * 按类型指示自动装配 bean 属性的常量（适用于所有 bean 属性设置器）。
+	 *
 	 * Constant that indicates autowiring bean properties by type
 	 * (applying to all bean property setters).
 	 * @see #createBean
@@ -89,6 +94,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_BY_TYPE = 2;
 
 	/**
+	 * 指示自动装配可以满足的最贪婪构造函数的常量（涉及解析适当的构造函数）。
+	 *
 	 * Constant that indicates autowiring the greediest constructor that
 	 * can be satisfied (involves resolving the appropriate constructor).
 	 * @see #createBean
@@ -126,6 +133,9 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	//-------------------------------------------------------------------------
 
 	/**
+	 * 完全创建给定类的新 bean 实例。 <p>执行 bean 的完整初始化，包括所有适用的 {@link BeanPostProcessor BeanPostProcessors}。
+	 * <p>注意：这用于创建新实例、填充带注释的字段和方法以及应用所有标准 bean 初始化回调。
+	 * 它<i>不<i> 意味着传统的按名称或按类型自动装配属性；将 {@link #createBean(Class, int, boolean)} 用于这些目的。
 	 * Fully create a new bean instance of the given class.
 	 * <p>Performs full initialization of the bean, including all applicable
 	 * {@link BeanPostProcessor BeanPostProcessors}.
@@ -140,6 +150,10 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	<T> T createBean(Class<T> beanClass) throws BeansException;
 
 	/**
+	 * 通过应用实例化后回调和 bean 属性后处理（例如，用于注释驱动的注入）来填充给定的 bean 实例。
+	 * <p>注意：这主要用于（重新）填充带注释的字段和方法，用于新实例或反序列化实例。
+	 * 它<i>不<i> 意味着传统的按名称或按类型自动装配属性；
+	 *
 	 * Populate the given bean instance through applying after-instantiation callbacks
 	 * and bean property post-processing (e.g. for annotation-driven injection).
 	 * <p>Note: This is essentially intended for (re-)populating annotated fields and
@@ -152,6 +166,11 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	void autowireBean(Object existingBean) throws BeansException;
 
 	/**
+	 *
+	 * 配置给定的原始 bean：自动装配 bean 属性、应用 bean 属性值、应用工厂回调（例如 {@code setBeanName} 和 {@code setBeanFactory}），
+	 * 以及应用所有 bean 后处理器（包括可能包装给定生 bean 的后处理器） .
+	 * <p>这实际上是 {@link #initializeBean} 提供的超集，完全应用了相应 bean 定义指定的配置。 <b>注意：此方法需要给定名称的 bean 定义！<b>
+	 *
 	 * Configure the given raw bean: autowiring bean properties, applying
 	 * bean property values, applying factory callbacks such as {@code setBeanName}
 	 * and {@code setBeanFactory}, and also applying all bean post processors
@@ -336,6 +355,10 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	//-------------------------------------------------------------------------
 
 	/**
+	 *
+	 * 解析与给定对象类型唯一匹配的 bean 实例（如果有），包括其 bean 名称。
+	 * <p>这实际上是 {@link #getBean(Class)} 的变体，它保留了匹配实例的 bean 名称。
+	 *
 	 * Resolve the bean instance that uniquely matches the given object type, if any,
 	 * including its bean name.
 	 * <p>This is effectively a variant of {@link #getBean(Class)} which preserves the

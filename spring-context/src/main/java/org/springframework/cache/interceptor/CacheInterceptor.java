@@ -16,12 +16,17 @@
 
 package org.springframework.cache.interceptor;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyValues;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -67,5 +72,4 @@ public class CacheInterceptor extends CacheAspectSupport implements MethodInterc
 			throw th.getOriginal();
 		}
 	}
-
 }
