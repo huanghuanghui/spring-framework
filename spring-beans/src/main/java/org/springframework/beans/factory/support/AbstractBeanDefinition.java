@@ -166,7 +166,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	private Supplier<?> instanceSupplier;
 
 	private boolean nonPublicAccessAllowed = true;
-
+	//宽松的构造函数解析
 	private boolean lenientConstructorResolution = true;
 
 	@Nullable
@@ -1052,7 +1052,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		this.synthetic = synthetic;
 	}
 
-	/**
+	/**返回此 bean 定义是否是“合成的”，即不是由应用程序本身定义的。
 	 * Return whether this bean definition is 'synthetic', that is,
 	 * not defined by the application itself.
 	 */

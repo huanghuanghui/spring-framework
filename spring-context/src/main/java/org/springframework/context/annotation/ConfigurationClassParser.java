@@ -170,6 +170,8 @@ class ConfigurationClassParser {
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
+				//使用AnnotationConfigApplicationContext，在示例化AnnotationConfigApplicationContext类的时候，
+				// 回调用doRegisterBean，将我们传入的配置类注册为AnnotatedGenericBeanDefinition，是AnnotatedBeanDefinition的子类
 				if (bd instanceof AnnotatedBeanDefinition) {
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
@@ -203,6 +205,7 @@ class ConfigurationClassParser {
 	}
 
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
+		//把我们的配置类源信息和beanName包装成一个ConfigurationClass 对象
 		processConfigurationClass(new ConfigurationClass(metadata, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
@@ -243,9 +246,10 @@ class ConfigurationClassParser {
 			}
 		}
 
-		// Recursively process the configuration class and its superclass hierarchy.
+		// 递归处理配置类及其超类层次结构。
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		do {
+			//解析@ComponentScan
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
@@ -254,6 +258,7 @@ class ConfigurationClassParser {
 	}
 
 	/**
+	 * 通过从源类中读取注解、成员和方法，应用处理并构建一个完整的 {@link ConfigurationClass}。当发现相关来源时，可以多次调用此方法。
 	 * Apply processing and build a complete {@link ConfigurationClass} by reading the
 	 * annotations, members and methods from the source class. This method can be called
 	 * multiple times as relevant sources are discovered.
@@ -267,7 +272,7 @@ class ConfigurationClassParser {
 			throws IOException {
 
 		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
-			// Recursively process any member (nested) classes first
+			//首先递归处理任何成员（嵌套）类（内部类）
 			processMemberClasses(configClass, sourceClass, filter);
 		}
 
@@ -291,6 +296,7 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
+				//扫描出打了@ComponentScan注解的配置类下的所有的打了@Component的类，将其注册为BeanDefinition
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
@@ -299,7 +305,9 @@ class ConfigurationClassParser {
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
+					//解析BeanDefinition，判断其是否是配置类，是否打了@ComponentScan注解，如果打了，会进入递归解析他的配置
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
+						//递归解析
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}
 				}

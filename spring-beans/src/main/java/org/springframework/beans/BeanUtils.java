@@ -171,7 +171,7 @@ public abstract class BeanUtils {
 		return (T) instantiateClass(clazz);
 	}
 
-	/**
+	/**使用给定构造函数实例化类的便捷方法。 <p>请注意，如果给定一个不可访问（即非公共）的构造函数，此方法会尝试设置可访问的构造函数，并支持带有可选参数和默认值的 Kotlin 类。
 	 * Convenience method to instantiate a class using the given constructor.
 	 * <p>Note that this method tries to set the constructor accessible if given a
 	 * non-accessible (that is, non-public) constructor, and supports Kotlin classes

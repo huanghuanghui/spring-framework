@@ -227,6 +227,23 @@ public interface ListableBeanFactory extends BeanFactory {
 	String[] getBeanNamesForType(@Nullable Class<?> type);
 
 	/**
+	 * 在 FactoryBeans 的情况下，根据 bean 定义或 {@code getObjectType} 的值来判断，
+	 * 返回与给定类型（包括子类）匹配的 bean 的名称。
+	 * <p><b>注意：这个方法只内省顶级bean。<b>它<i>不<i>检查可能匹配指定类型的嵌套bean。
+	 * <p>如果设置了“allowEagerInit”标志，则是否考虑由 FactoryBeans 创建的对象，这意味着 FactoryBeans 将被初始化。
+	 * 如果 FactoryBean 创建的对象不匹配，则原始 FactoryBean 本身将与类型匹配。如果未设置“allowEagerInit”，
+	 * 则只会检查原始 FactoryBeans（不需要初始化每个 FactoryBean）。 <p>不考虑该工厂可能参与的任何层次结构。
+	 * 使用 BeanFactoryUtils 的 {@code beanNamesForTypeInducingAncestors} 也将 bean 包含在祖先工厂中。
+	 * <p>注意：是否<i>不<i>忽略通过bean定义以外的其他方式注册的单例bean。
+	 * <p>此方法返回的Bean名称应始终按照后端配置中定义的顺序<i>返回Bean名称，并尽可能返回。
+	 * @param type 输入要匹配的类或接口，或者 {@code null} 用于所有 bean 名称
+	 * @param includeNonSingletons 是否也包含原型或作用域 bean 或仅包含单例（也适用于 FactoryBeans）
+	 * @param allowEagerInit 是否初始化
+	 *        <i>lazy -init singletons<i> 和 <i> 由 FactoryBeans<i>
+	 *        创建的对象（或通过带有“factory-bean”引用的工厂方法）用于类型检查。
+	 *  	  请注意，FactoryBeans 需要急切地初始化以确定它们的类型：因此请注意，
+	 *  	  为此标志传入“true”将初始化 FactoryBeans 和“factory-bean”引用。
+	 * @return 与给定对象类型（包括子类）匹配的 bean（或由 FactoryBeans 创建的对象）的名称，如果没有则返回空数组
 	 * Return the names of beans matching the given type (including subclasses),
 	 * judging from either bean definitions or the value of {@code getObjectType}
 	 * in the case of FactoryBeans.

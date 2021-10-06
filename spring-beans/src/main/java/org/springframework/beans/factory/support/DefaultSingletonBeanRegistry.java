@@ -225,7 +225,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						//获取二级缓存中的bean
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
-							//三级缓存中获取 三级缓存存储的是，如何获取这个对象的逻辑，是一个supplier
+							//三级缓存中获取 三级缓存存储的是，如何获取这个对象的逻辑，是一个supplier，从doGetBean addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));传入的一个没有经过bean的生命周期的对象的引用
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
 								//bean在三级缓存中存在

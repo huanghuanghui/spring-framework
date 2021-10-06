@@ -573,9 +573,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//调用在上下文中注册为 bean 的工厂处理器。ConfigurationClassPostProcessor/EventListener 通过getBean，
 				// 将实现了对应的BeanProcessors的对象，生成Bean
 				//扩展点在第一段代码，我们可以自己往beanFactoryPostProcessors add对象，让我们的自己注册的beanFactory最先执行
+				//执行ConfigurationClassPostProcessor，invokeBeanDefinitionRegistryPostProcessors，扫描@Configuration/@Bean/@Component等注解
+				//将扫描的类，注册成BeanDefinition，finishBeanFactoryInitialization找出所有的BeanDefinition，调用GetBean，生成Bean对象
 				invokeBeanFactoryPostProcessors(beanFactory);
 
-				// Register bean processors that intercept bean creation.注册拦截 bean 创建的 bean 处理器。
+				// 注册拦截 bean 创建的 BeanPostProcessors。
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 

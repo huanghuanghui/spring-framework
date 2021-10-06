@@ -1,4 +1,4 @@
-package org.hhh.bean;
+package org.hhh.component;
 
 import org.springframework.stereotype.Component;
 
@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
  * @Description TODO
  */
 @Component
-public class TestService {
+public class AService {
+
     public void test(){
-        System.out.println("-----------test------------");
+        System.out.println("-----------testA------------");
     }
+
 }

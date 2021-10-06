@@ -1,5 +1,8 @@
 package org.hhh.config;
 
+import org.hhh.bean.MyBean;
+import org.hhh.bean.MyBean2;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -9,4 +12,14 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @ComponentScan({"org.hhh"})
 public class AppConfig {
+
+    @Bean
+    public MyBean myBean(){
+        return new MyBean();
+    }
+    @Bean
+    public static MyBean2 myBean2(){
+        return new MyBean2();
+    }
+
 }

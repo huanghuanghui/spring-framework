@@ -58,6 +58,9 @@ final class ConfigurationClass {
 
 	private final Set<ConfigurationClass> importedBy = new LinkedHashSet<>(1);
 
+	/**
+	 * 存储所有打了@Bean的注解的方法，将其存入beanMethods，在@Bean扫描的时候，使用这个类进行扫描
+	 */
 	private final Set<BeanMethod> beanMethods = new LinkedHashSet<>();
 
 	private final Map<String, Class<? extends BeanDefinitionReader>> importedResources =

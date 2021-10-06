@@ -52,6 +52,28 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	}
 
 	/**
+	 * 2. 遍历构造方法
+	 *
+	 * 　　|-> 只有一个无参构造方法, 则返回null
+	 *
+	 * 　　|-> 只有一个有参构造方法, 则返回这个构造方法
+	 *
+	 * 　　|-> 有多个构造方法且没有@Autowired, 此时spring则会蒙圈了, 不知道使用哪一个了. 这里的后置处理器, 翻译过来, 叫智能选择构造方法后置处理器.
+	 *
+	 * 　　　  当选择不了的时候, 干脆返回 null
+	 *
+	 * 　　|-> 有多个构造方法, 且在其中一个方法上标注了 @Autowired , 则会返回这个标注的构造方法
+	 *
+	 * 　　|-> 有多个构造方法, 且在多个方法上标注了@Autowired, 则spring会抛出异常, spring会认为, 你指定了几个给我, 是不是你弄错了
+	 *
+	 *
+	 *
+	 * 注:
+	 *
+	 * 这地方有个问题需要注意一下, 如果你写了多个构造方法, 且没有写 无参构造方法, 那么此处返回null,
+	 *
+	 * 在回到 createBeanInstance 方法中, 如果不能走 autowireConstructor(), 而走到 instantiateBean() 中去的话, 会报错的.
+	 *
 	 * Determine the candidate constructors to use for the given bean.
 	 * <p>The default implementation returns {@code null}.
 	 * @param beanClass the raw class of the bean (never {@code null})
