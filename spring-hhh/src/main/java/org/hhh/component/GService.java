@@ -1,5 +1,6 @@
 package org.hhh.component;
 
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Component;
  * @Description TODO
  */
 //@Component
-public class AService {
+public class GService implements BeanPostProcessor {
 
     public void test(){
-        System.out.println("-----------testA------------");
+        System.out.println("-----------testG------------");
     }
 
 }

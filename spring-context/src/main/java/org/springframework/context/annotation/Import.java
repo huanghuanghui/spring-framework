@@ -56,6 +56,10 @@ import java.lang.annotation.Target;
 public @interface Import {
 
 	/**
+	 * 可以配合 Configuration , ImportSelector, ImportBeanDefinitionRegistrar 来使用
+	 * or
+	 * 或者常用的（regular component classes ）也就是Bean
+	 *
 	 * {@link Configuration @Configuration}, {@link ImportSelector},
 	 * {@link ImportBeanDefinitionRegistrar}, or regular component classes to import.
 	 */

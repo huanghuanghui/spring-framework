@@ -772,6 +772,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		Set<File> matchingFiles = retrieveMatchingFiles(rootDir, subPattern);
 		Set<Resource> result = new LinkedHashSet<>(matchingFiles.size());
 		for (File file : matchingFiles) {
+			//文件扫描最核心代码
 			result.add(new FileSystemResource(file));
 		}
 		return result;

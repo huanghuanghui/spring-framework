@@ -233,6 +233,7 @@ public class InjectionMetadata {
 			if (this.isField) {
 				Field field = (Field) this.member;
 				ReflectionUtils.makeAccessible(field);
+				//反射设置值
 				field.set(target, getResourceToInject(target, requestingBeanName));
 			}
 			else {

@@ -73,23 +73,30 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Constant that indicates autowiring bean properties by name.
+	 * set方法注入，但是set方法的XXX必须是类名，比如setUserService(UserService userService);根据set后的XXX去容器中查找bean后注入
 	 * @see #setAutowireMode
 	 */
 	public static final int AUTOWIRE_BY_NAME = AutowireCapableBeanFactory.AUTOWIRE_BY_NAME;
 
 	/**
 	 * Constant that indicates autowiring bean properties by type.
+	 * 使用ImportBeanDefinitionRegistrar 修改autowiredMode
+	 * set方法注入，set方法的方法名可以随便写，spring根据set方法中的类型去查找bean，比如setXXXXX(UserService userService);
 	 * @see #setAutowireMode
 	 */
 	public static final int AUTOWIRE_BY_TYPE = AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE;
 
 	/**
 	 * Constant that indicates autowiring a constructor.
+	 * 使用构造方法注入
 	 * @see #setAutowireMode
 	 */
 	public static final int AUTOWIRE_CONSTRUCTOR = AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR;
 
 	/**
+	 *
+	 * 指示通过自省 bean 类确定适当的自动装配策略的常量。
+	 *
 	 * Constant that indicates determining an appropriate autowire strategy
 	 * through introspection of the bean class.
 	 * @see #setAutowireMode

@@ -641,6 +641,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 调用 initialzingBean，调用实现的 afterPropertiesSet()
 			// 调用 init-mothod，调用相应的init方法
 			// 调用 后置处理器 BeanPostProcessor 里面的调用实现的postProcessAfterInitialization方法
+			//返回被代理增强后的对象，作为生成的bean对象返回给调用者，将对象引用存入三级缓存
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -652,11 +653,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		//允许提早访问bean的实例，需要针对bean的代理对象做处理
 		if (earlySingletonExposure) {
+			//去三级缓存或者二级缓存获取对象引用，获取三级缓存的引用，是调用getEarlyReference中存入的方法，将对象出来，
+			//但是getEarlyReference中有代理的逻辑，所以在initializeBean或者getObject的时候，需要控制只执行一次代理
 			Object earlySingletonReference = getSingleton(beanName, false);
 			//earlySingletonReference 只有在检测到有循环依赖的情况下才会不为空
 			if (earlySingletonReference != null) {
-				//如果exposedObject 没有在初始化方法中被改变，也就是没有被增强
+				//如果exposedObject=bean对象
 				if (exposedObject == bean) {
 					exposedObject = earlySingletonReference;
 				}

@@ -1,5 +1,7 @@
 package org.hhh.bean;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * @Author: hhh
  * @Date: 2021/10/6 2:25 下午
@@ -13,7 +15,8 @@ package org.hhh.bean;
  */
 public class MyBean {
 
-    public void test(){
-        System.out.println("----------------myBean----------------");
+
+    public void test(String user, String password){
+        System.out.println("----------------myBean----------------"+user+"/"+password);
     }
 }

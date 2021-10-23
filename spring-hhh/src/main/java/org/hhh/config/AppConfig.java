@@ -2,8 +2,13 @@ package org.hhh.config;
 
 import org.hhh.bean.MyBean;
 import org.hhh.bean.MyBean2;
+import org.hhh.bean.MyImportBeanDefinitionRegister;
+import org.hhh.bean.SqlSessionConfig;
+import org.hhh.importanno.EnableMyImportSelector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @Author: hhh
@@ -11,15 +16,16 @@ import org.springframework.context.annotation.ComponentScan;
  * @Description TODO
  */
 @ComponentScan({"org.hhh"})
+@Import({MyImportBeanDefinitionRegister.class})
+@EnableMyImportSelector(name = "hhhh")
 public class AppConfig {
 
     @Bean
-    public MyBean myBean(){
-        return new MyBean();
-    }
-    @Bean
-    public static MyBean2 myBean2(){
-        return new MyBean2();
+    @Lazy
+    public MyBean myBean(SqlSessionConfig sqlSessionConfig){
+        MyBean myBean = new MyBean();
+        myBean.test(sqlSessionConfig.getName(),sqlSessionConfig.getPassword());
+        return myBean;
     }
 
 }

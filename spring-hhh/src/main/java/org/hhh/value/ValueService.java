@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * - @Value(“#{}”) 表示SpEl表达式通常用来获取bean的属性，或者调用bean的某个方法。当然还有可以表示常量 @Value(“#{dataSource.url}”
  * - 用 @Value(“${xxxx}”)注解从配置文件读取值的用法
  */
-@Component
+//@Component
 public class ValueService {
 
     @Value("${hhh.name}")

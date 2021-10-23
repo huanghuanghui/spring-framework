@@ -425,6 +425,14 @@ final class PostProcessorRegistrationDelegate {
 			return bean;
 		}
 
+		/**
+		 * this.beanFactory.getBeanPostProcessorCount() < this.beanPostProcessorTargetCount
+		 * 判断的是这个bean在初始化的时候，是不是由BeanPostProcessor带着初始化的，比如BService implements BeanPostProcessor，且注入了AService
+		 * 在BService注册BeanPostProcessor，生成bean的期间，会带着A进行初始化，这个时候A不走B的BeanPostProcessor，会报这个提示
+		 * @param bean the new bean instance
+		 * @param beanName the name of the bean
+		 * @return
+		 */
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (!(bean instanceof BeanPostProcessor) && !isInfrastructureBean(beanName) &&

@@ -1,6 +1,9 @@
 package org.hhh.component;
 
 
+import org.hhh.bean.MyBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * @Author: hhh
  * @Date: 2021/10/3 4:11 下午
@@ -23,6 +26,13 @@ package org.hhh.component;
  *      spring application context close 的时候会进行回调
  */
 public class DService {
+
+    @Autowired
+    private MyBean myBean;
+
+    public MyBean getMyBean() {
+        return myBean;
+    }
 
     /**
      * 执行顺序 1

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/9/28 1:48 下午
  * @Description TODO
  */
-@Component
+//@Component
 public class BService implements BeanPostProcessor {
     @Autowired
     private AService aService;

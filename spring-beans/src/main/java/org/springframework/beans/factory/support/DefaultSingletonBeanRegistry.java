@@ -231,6 +231,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 								//bean在三级缓存中存在
 								singletonObject = singletonFactory.getObject();
 								//存入二级缓存，保证一个bean至少在一个缓存阶段中，现在存的是提前曝光的bean
+								//getEarlyReference调用完成，会返回一个被代理执行过的对象，这个时候存到二级缓存的bean instance地址值已经改变了
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								//在三级缓存中移除
 								this.singletonFactories.remove(beanName);
@@ -265,7 +266,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				//不在当前从创建检查中排除的 bean 的名称 &&不在当前正在创建的 bean 的名称。
+				//不在当前从创建检查中排除的 bean 的名称 &&不在当前正在创建的 bean 的名称。在addSingletonFactory 加入bena到三级缓存的时候，会判断bean是否在创建中
 				//往singletonsCurrentlyInCreation这个Set中添加beanName的过程
 				//这个Set很重要，标记当前bean正在创建，相当于乐观锁的作用
 				beforeSingletonCreation(beanName);
