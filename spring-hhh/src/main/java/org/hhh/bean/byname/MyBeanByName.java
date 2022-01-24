@@ -10,7 +10,7 @@ import org.hhh.bean.MyBean;
 public class MyBeanByName {
     private MyBean myBean;
 
-    public void setMyBean222(MyBean myBean) {
+    public void setMyBean(MyBean myBean) {
         System.out.println("-------autowired mode by Name------set myBean");
         this.myBean = myBean;
     }

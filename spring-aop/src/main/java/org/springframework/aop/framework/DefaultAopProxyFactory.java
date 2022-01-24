@@ -57,7 +57,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 		if (!NativeDetector.inNativeImage() &&
 				(config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config))) {
 			Class<?> targetClass = config.getTargetClass();
-			if (targetClass == null) {
+			if (targetClass == null) {//如果是一个接口，必须要有实现类，不然会无法创建代理
 				throw new AopConfigException("TargetSource cannot determine target class: " +
 						"Either an interface or a target is required for proxy creation.");
 			}

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/10/20 11:23 上午
  * @Description TODO
  */
-@Component
+//@Component
 public class SqlSessionConfig {
 
     public String getName() {

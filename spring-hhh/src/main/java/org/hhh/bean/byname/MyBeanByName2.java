@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/10/20 5:31 下午
  * @Description TODO
  */
-@Component
 public class MyBeanByName2 {
     private MyBean myBean;
 

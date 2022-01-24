@@ -69,16 +69,22 @@ class ComponentScanAnnotationParser {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
+		//从注解中取出nameGenerator配置
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
+		//判断nameGenerator是不是=默认的BeanNameGenerator
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
-		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
-				BeanUtils.instantiateClass(generatorClass));
+		//如果自己没有重写，那么默认使用AnnotationBeanNameGenerator，否则使用我们自定义的
+		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator : BeanUtils.instantiateClass(generatorClass));
 
+		//获取scopedProxy属性
 		ScopedProxyMode scopedProxyMode = componentScan.getEnum("scopedProxy");
+		//判断是否为默认的代理类型，DEFAULT指默认不代理
 		if (scopedProxyMode != ScopedProxyMode.DEFAULT) {
+			//如果自定义了代理类型，那么就会拉起一个AnnotationScopeMetadataResolver对象，将代理模式存入
 			scanner.setScopedProxyMode(scopedProxyMode);
-		}
-		else {
+		} else {
+			//scopeResolver与scopedProxy是互斥的
+			//scopedProxyMode=DEFAULT，将默认的AnnotationScopeMetadataResolver存入，如果自己有重写，将自己的代理类存入
 			Class<? extends ScopeMetadataResolver> resolverClass = componentScan.getClass("scopeResolver");
 			scanner.setScopeMetadataResolver(BeanUtils.instantiateClass(resolverClass));
 		}
@@ -106,15 +112,21 @@ class ComponentScanAnnotationParser {
 		}
 
 		Set<String> basePackages = new LinkedHashSet<>();
+		//从注解中取出basePackages属性值
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
+			//若配置不为空，将字符串按照指定的字符转换成String[]数组，如字符串中不包含指定字符，则将整个字符串放进数组。如指定字符有多个，
+			// 是分别按单个字符来切割的。 例如basePackages为： “org.hhh,org.mytest” 指定字符： “,;\t\n” 返回数组：[org.hhh, org.mytest]对应包下的文件都会被扫描
+			//this.environment.resolvePlaceholders(pkg)支持EL表达式，例如：scanBasePackages = "${my.url}"，会被当作配置进行加载
 			String[] tokenized = StringUtils.tokenizeToStringArray(this.environment.resolvePlaceholders(pkg),
 					ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
 			Collections.addAll(basePackages, tokenized);
 		}
+		//如果basePackageClasses不为空，将其类所在的包加入basePackages，会扫描加入类及其子包下的所有组件
 		for (Class<?> clazz : componentScan.getClassArray("basePackageClasses")) {
 			basePackages.add(ClassUtils.getPackageName(clazz));
 		}
+		//如果basePackages为空，默认扫描当前类及其子包，SpringbootApplication中常用
 		if (basePackages.isEmpty()) {
 			basePackages.add(ClassUtils.getPackageName(declaringClass));
 		}

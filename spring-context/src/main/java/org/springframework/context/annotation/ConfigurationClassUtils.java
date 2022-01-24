@@ -127,9 +127,12 @@ abstract class ConfigurationClassUtils {
 		}
 
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
+		//打了@Configuration，没有设置proxyBeanMethods，设置CONFIGURATION_CLASS_ATTRIBUTE=FULL
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
+		//如果打了@Configuration，且设置了proxyBeanMethods=false，设置CONFIGURATION_CLASS_ATTRIBUTE=LITE
+		//打了Component/ComponentScan/Import/ImportResource，也设置为LITE模式
 		else if (config != null || isConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}

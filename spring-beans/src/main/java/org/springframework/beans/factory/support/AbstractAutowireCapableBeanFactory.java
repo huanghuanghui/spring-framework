@@ -1490,7 +1490,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			checkDependencies(beanName, mbd, filteredPds, pvs);
 		}
 
-		if (pvs != null) {
+		if (pvs != null) {//将自动装配auto wired by type 与ByName的属性，装配给类
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}

@@ -151,7 +151,7 @@ final class PostProcessorRegistrationDelegate {
 				currentRegistryProcessors.clear();
 			}
 
-			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			// 执行注册的BeanFactoryPostProcessor#postProcessBeanFactory，默认注册的为ConfigurationClassPostProcessors，会给full的配置类进行增强
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}

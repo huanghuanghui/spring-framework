@@ -102,7 +102,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 * 	EventListenerMethodProcessor/DefaultEventListenerFactory 事件监听
 		 */
 		this();
-		//AnnotationsScanner.getDeclaredAnnotations() 获取类上的所有注解，存入缓存declaredAnnotationCache，完成注解扫描，并把componentClasses类加入bean definition
+		//AnnotationsScanner.getDeclaredAnnotations() 获取类上的所有注解，存入缓存declaredAnnotationCache
+		//注册配置类的BeanDefinition
 		register(componentClasses);
 		refresh();
 	}
