@@ -64,6 +64,9 @@ abstract class ConfigurationClassUtils {
 
 	private static final Log logger = LogFactory.getLog(ConfigurationClassUtils.class);
 
+	/**
+	 * 所有符合配置类的注解@Component/@ComponentScan/@Import/@ImportResource
+	 */
 	private static final Set<String> candidateIndicators = new HashSet<>(8);
 
 	static {
@@ -88,13 +91,15 @@ abstract class ConfigurationClassUtils {
 	 */
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
-
+		//获取到当前类名称
 		String className = beanDef.getBeanClassName();
+		//
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
 		}
 
 		AnnotationMetadata metadata;
+		//处理注解，如果当前的BeanDefinition不是AnnotatedBeanDefinition&&不是AbstractBeanDefinition，直接返回false，不是Spring配置类
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
@@ -125,14 +130,14 @@ abstract class ConfigurationClassUtils {
 				return false;
 			}
 		}
-
+		//获取类上是否有@Configuration注解
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
 		//打了@Configuration，没有设置proxyBeanMethods，设置CONFIGURATION_CLASS_ATTRIBUTE=FULL
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		//如果打了@Configuration，且设置了proxyBeanMethods=false，设置CONFIGURATION_CLASS_ATTRIBUTE=LITE
-		//打了Component/ComponentScan/Import/ImportResource，也设置为LITE模式
+		//打了Component/ComponentScan/Import/ImportResource，判断是否有@Bean，设置为LITE模式，同时判断为Spring的配置类
 		else if (config != null || isConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
@@ -157,24 +162,24 @@ abstract class ConfigurationClassUtils {
 	 * configuration class processing; {@code false} otherwise
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
-		// Do not consider an interface or an annotation...
+		// 是接口，直接返回false
 		if (metadata.isInterface()) {
 			return false;
 		}
-
-		// Any of the typical annotations found?
+		// 打了Component/ComponentScan/Import/ImportResource，返回true
 		for (String indicator : candidateIndicators) {
 			if (metadata.isAnnotated(indicator)) {
 				return true;
 			}
 		}
 
-		// Finally, let's look for @Bean methods...
+		//如果有@Bean方法，也返回true
 		return hasBeanMethods(metadata);
 	}
 
 	static boolean hasBeanMethods(AnnotationMetadata metadata) {
 		try {
+			//是否有@Bean方法
 			return metadata.hasAnnotatedMethods(Bean.class.getName());
 		}
 		catch (Throwable ex) {

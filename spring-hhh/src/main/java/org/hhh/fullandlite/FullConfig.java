@@ -4,7 +4,7 @@ import org.hhh.mycomponet.Student;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+
 public class FullConfig {
     @Bean
     public Student studentA() {

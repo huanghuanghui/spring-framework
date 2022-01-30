@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * @Date: 2022/1/20 11:20 上午
  * @Description TODO
  */
-@Component
+//@Component
 public class Student {
 
     private String name;

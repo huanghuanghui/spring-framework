@@ -169,7 +169,7 @@ class ConfigurationClassParser {
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
-			try {
+			try {//配置类是registerBean中设置进去的，配置类的BeanDefinition为AnnotatedGenericBeanDefinition
 				//使用AnnotationConfigApplicationContext，在示例化AnnotationConfigApplicationContext类的时候，
 				// 回调用doRegisterBean，将我们传入的配置类注册为AnnotatedGenericBeanDefinition，是AnnotatedBeanDefinition的子类
 				if (bd instanceof AnnotatedBeanDefinition) {
@@ -229,19 +229,20 @@ class ConfigurationClassParser {
 		if (this.conditionEvaluator.shouldSkip(configClass.getMetadata(), ConfigurationPhase.PARSE_CONFIGURATION)) {
 			return;
 		}
-
+		//configurationClasses存的为解析后的ConfigurationClass文件，避免重复解析使用
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
+		//判断是否已经解析过，解析过就直接返回，不再解析，避免递归重复解析
 		if (existingClass != null) {
+			//如果是import加入进来的类，就退出
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
 					existingClass.mergeImportedBy(configClass);
 				}
-				// Otherwise ignore new imported config class; existing non-imported class overrides it.
+				// 否则忽略新导入的配置类；现有的非导入类会覆盖它。
 				return;
 			}
 			else {
-				// Explicit bean definition found, probably replacing an import.
-				// Let's remove the old one and go with the new one.
+				// 找到显式 bean definition，可能替换导入。删除旧的并使用新的。
 				this.configurationClasses.remove(configClass);
 				this.knownSuperclasses.values().removeIf(configClass::equals);
 			}
@@ -254,7 +255,8 @@ class ConfigurationClassParser {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
-
+		//扫描出来的类，会存入configurationClasses，用来判断是否已经扫描过，避免递归出不来，这个类会提供到递归的最初入口，将扫描出来的类进行相应配置
+		//最后一个被put的是传入的配置类，因为这是一个递归，最先进去扫描的配置类，最后才会退出来，相当于一个栈，先入后出
 		this.configurationClasses.put(configClass, configClass);
 	}
 
@@ -300,13 +302,14 @@ class ConfigurationClassParser {
 				//扫描出打了@ComponentScan注解的配置类下的所有的打了@Component的类，将其注册为BeanDefinition
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
-				// Check the set of scanned definitions for any further config classes and parse recursively if needed
+				// 检查扫描出来的beanDefinition，判断是否打了@ComponentScan注解
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
-					//解析BeanDefinition，判断其是否是配置类，是否打了@ComponentScan注解，如果打了，会进入递归解析他的配置
+					//解析BeanDefinition，判断其是否是配置类，是配置类，会进入递归解析他的配置
+					//checkConfigurationClassCandidate与最初的检查传入的配置类的代码一致，检查是否打了Component/ComponentScan/Import/ImportResource/@Bean
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
 						//递归解析
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
@@ -330,10 +333,10 @@ class ConfigurationClassParser {
 			}
 		}
 
-		// Process individual @Bean methods 处理单个@Bean 方法
+		// 获取当前配置类所有的打了@Bean的方法
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
-			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
+			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));//将所有扫描到的@Bean方法，加入到ConfigClass配置类的BeanMethod
 		}
 
 		// Process default methods on interfaces

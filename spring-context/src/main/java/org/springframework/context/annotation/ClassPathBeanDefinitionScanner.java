@@ -278,22 +278,28 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		for (String basePackage : basePackages) {
-			//找到打了@Component的候选者
-			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
+			//找到打了@Component的候选者，默认找classpath*:传入的ComponentScan路径**/*.class 这边被扫描出来的BeanDefinition为ScannedGenericBeanDefinition，即是AbstractBeanDefinition又是AnnotatedBeanDefinition
+			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);//会过滤掉传入配置类的扫描，因为配置类已经生成了BeanDefinition，在前面的excludeFilter中注册的表达式
 			for (BeanDefinition candidate : candidates) {
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 				if (candidate instanceof AbstractBeanDefinition) {
+					//为bd中的属性设置默认值，除了通过扫描组件类检索到的内容之外，将进一步的设置应用于给定的 bean definition。
+					//setLazy/setAutowireMode/setDependencyCheck/setInitMethodName等
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
+				//扫描出来的为AnnotatedBeanDefinition，是通过注解扫描出来的，那么需要设置其@Lazy/@Primary/@DependOn等属性
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
+				//检查给定候选的 bean 名称，确定相应的 bean 定义是否需要注册或与现有定义冲突。
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
-					definitionHolder =
-							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+					//设置scopedProxy属性传入的代理模式，如果是no，不代理
+					definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+					//将扫描出来的definition加入beanDefinitions，返回给前面的for循环，
+					// 继续找当前查找出来的beanDefinition是否是@ComponentScan的候选者，是的话继续进入扫描
 					beanDefinitions.add(definitionHolder);
 					//将打了@Component的类注册为BeanDefinition
 					registerBeanDefinition(definitionHolder, this.registry);
@@ -304,13 +310,18 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	}
 
 	/**
+	 *
+	 * 除了通过扫描组件类检索到的内容之外，将进一步的设置应用于给定的 bean 定义。
+	 *
 	 * Apply further settings to the given bean definition,
 	 * beyond the contents retrieved from scanning the component class.
 	 * @param beanDefinition the scanned bean definition
 	 * @param beanName the generated bean name for the given bean
 	 */
 	protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
+		//为bd中的属性设置默认值
 		beanDefinition.applyDefaults(this.beanDefinitionDefaults);
+		// 注解模式下这个值必定为null,使用XML配置时，生效
 		if (this.autowireCandidatePatterns != null) {
 			beanDefinition.setAutowireCandidate(PatternMatchUtils.simpleMatch(this.autowireCandidatePatterns, beanName));
 		}

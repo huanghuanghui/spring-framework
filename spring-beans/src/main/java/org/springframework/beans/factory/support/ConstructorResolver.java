@@ -394,26 +394,26 @@ class ConstructorResolver {
 
 		String factoryBeanName = mbd.getFactoryBeanName();
 		if (factoryBeanName != null) {
-			if (factoryBeanName.equals(beanName)) {
+			if (factoryBeanName.equals(beanName)) {//@Bean的方法名不能与配置类的名称相同
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"factory-bean reference points back to the same bean definition");
-			}
+			}//获取出当前配置类的bean，配置类为当前bean的factory bean
 			factoryBean = this.beanFactory.getBean(factoryBeanName);
 			if (mbd.isSingleton() && this.beanFactory.containsSingleton(beanName)) {
 				throw new ImplicitlyAppearedSingletonException();
-			}
+			}//为当前配置类注册DependentBean
 			this.beanFactory.registerDependentBean(factoryBeanName, beanName);
 			factoryClass = factoryBean.getClass();
 			isStatic = false;
 		}
 		else {
-			// It's a static factory method on the bean class.
+			// 是static的@Bean方法
 			if (!mbd.hasBeanClass()) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"bean definition declares neither a bean class nor a factory-bean reference");
-			}
+			}//设置factoryBean为null
 			factoryBean = null;
-			factoryClass = mbd.getBeanClass();
+			factoryClass = mbd.getBeanClass();//设置factoryClass
 			isStatic = true;
 		}
 
@@ -445,7 +445,7 @@ class ConstructorResolver {
 			// Need to determine the factory method...
 			// Try all methods with this name to see if they match the given arguments.
 			factoryClass = ClassUtils.getUserClass(factoryClass);
-
+			//推断设置当前@Beanmethod
 			List<Method> candidates = null;
 			if (mbd.isFactoryMethodUnique) {
 				if (factoryMethodToUse == null) {
@@ -464,8 +464,9 @@ class ConstructorResolver {
 					}
 				}
 			}
-
+			//说明没有重载方法，如果有重载方法candidates会大于1，这个时候就会判断，是否参数个数相同，相同会报错
 			if (candidates.size() == 1 && explicitArgs == null && !mbd.hasConstructorArgumentValues()) {
+				//类名.方法名
 				Method uniqueCandidate = candidates.get(0);
 				if (uniqueCandidate.getParameterCount() == 0) {
 					mbd.factoryMethodToIntrospect = uniqueCandidate;
@@ -474,11 +475,13 @@ class ConstructorResolver {
 						mbd.constructorArgumentsResolved = true;
 						mbd.resolvedConstructorArguments = EMPTY_ARGS;
 					}
+					//通过反射生成实例，设置BeanInstance
 					bw.setBeanInstance(instantiate(beanName, mbd, factoryBean, uniqueCandidate, EMPTY_ARGS));
+					//没有重载方法的@Bean解析完成
 					return bw;
 				}
 			}
-
+			//public最优先，多个public，参数个数多的方法往前排
 			if (candidates.size() > 1) {  // explicitly skip immutable singletonList
 				candidates.sort(AutowireUtils.EXECUTABLE_COMPARATOR);
 			}
@@ -509,10 +512,10 @@ class ConstructorResolver {
 
 			for (Method candidate : candidates) {
 				int parameterCount = candidate.getParameterCount();
-
+				//使用参数与参数中构造相比较，如果@Bean中参数个数大于实际类的构造
 				if (parameterCount >= minNrOfArgs) {
 					ArgumentsHolder argsHolder;
-
+					//取出@Bean所有入仓type
 					Class<?>[] paramTypes = candidate.getParameterTypes();
 					if (explicitArgs != null) {
 						// Explicit arguments given -> arguments length must match exactly.

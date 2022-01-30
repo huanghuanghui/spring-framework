@@ -927,7 +927,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
-					getBean(beanName);//获取bean，其实是校验bean是否已经创建，如果没有创建，那个会调用doCreateBean创建bean对象
+					getBean(beanName);//获取bean，其实是校验bean是否已经创建，如果没有创建，那个会调用doCreateBean创建bean对象，@Bean方法的类也在这里生产bean
 				}
 			}
 		}

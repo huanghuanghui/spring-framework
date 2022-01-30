@@ -4,7 +4,7 @@ import org.hhh.mycomponet.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-@Component  
+
 public class LiteConfig {
     @Bean
     public User userA() {

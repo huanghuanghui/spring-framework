@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  *      判断是否是lazy的属性，如果是lazy属性，被依赖注入的类，将会是一个代理类，通过@Lazy注解能够解决很多情况下的循环依赖问题，它的基本思想是先
  *      ’随便’给你创建一个代理对象先放着，等你真正执行方法的时候再实际去容器内找出目标实例执行
  */
-@Component
+//@Component
 public class UseMyLazyBean {
     @Autowired
     @Lazy

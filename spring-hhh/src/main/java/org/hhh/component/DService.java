@@ -27,13 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DService {
 
-    @Autowired
-    private MyBean myBean;
-
-    public MyBean getMyBean() {
-        return myBean;
-    }
-
     /**
      * 执行顺序 1
      *构造
