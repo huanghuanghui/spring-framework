@@ -61,13 +61,19 @@ public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * PropertySource的名称属性，提供了get方法，set只能通过构造方法设置
+	 */
 	protected final String name;
 
+	/**
+	 * PropertySource source属性，提供了get方法，set只能通过构造方法设置
+	 */
 	protected final T source;
 
 
 	/**
-	 * Create a new {@code PropertySource} with the given name and source object.
+	 * 使用给定的名称和源对象创建一个新的 {@code PropertySource}。
 	 * @param name the associated name
 	 * @param source the source object
 	 */
@@ -79,10 +85,8 @@ public abstract class PropertySource<T> {
 	}
 
 	/**
-	 * Create a new {@code PropertySource} with the given name and with a new
-	 * {@code Object} instance as the underlying source.
-	 * <p>Often useful in testing scenarios when creating anonymous implementations
-	 * that never query an actual source but rather return hard-coded values.
+	 使用给定的名称和新的 {@code Object} 实例作为基础源创建一个新的 {@code PropertySource}。
+	 <p>在创建从不查询实际源而是返回硬编码值的匿名实现时，通常在测试场景中很有用。
 	 */
 	@SuppressWarnings("unchecked")
 	public PropertySource(String name) {
@@ -91,24 +95,23 @@ public abstract class PropertySource<T> {
 
 
 	/**
-	 * Return the name of this {@code PropertySource}.
+	 *返回此 {@code PropertySource} 对象的名称。
 	 */
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-	 * Return the underlying source object for this {@code PropertySource}.
+	 * 返回此 {@code PropertySource} 的source。
 	 */
 	public T getSource() {
 		return this.source;
 	}
 
 	/**
-	 * Return whether this {@code PropertySource} contains the given name.
-	 * <p>This implementation simply checks for a {@code null} return value
-	 * from {@link #getProperty(String)}. Subclasses may wish to implement
-	 * a more efficient algorithm if possible.
+	 * 返回此 {@code PropertySource} 是否包含给定名称。
+	 * <p>此实现仅检查来自 {@link #getProperty(String)} 的 {@code null} 返回值。
+	 * 如果可能，子类可能希望实现更有效的算法。
 	 * @param name the property name to find
 	 */
 	public boolean containsProperty(String name) {
@@ -116,8 +119,8 @@ public abstract class PropertySource<T> {
 	}
 
 	/**
-	 * Return the value associated with the given name,
-	 * or {@code null} if not found.
+	 * 返回与给定名称关联的值，如果未找到，则返回 {@code null}。
+	 * 聚集管理的方法，交给子类实现
 	 * @param name the property to find
 	 * @see PropertyResolver#getRequiredProperty(String)
 	 */
@@ -170,9 +173,8 @@ public abstract class PropertySource<T> {
 
 
 	/**
-	 * Return a {@code PropertySource} implementation intended for collection comparison purposes only.
-	 * <p>Primarily for internal use, but given a collection of {@code PropertySource} objects, may be
-	 * used as follows:
+	 * 返回仅用于集合比较目的的 {@code PropertySource} 实现。
+	 * <p>主要供内部使用，但给定一组 {@code PropertySource} 对象，可以按如下方式使用：
 	 * <pre class="code">
 	 * {@code List<PropertySource<?>> sources = new ArrayList<PropertySource<?>>();
 	 * sources.add(new MapPropertySource("sourceA", mapA));
@@ -181,9 +183,8 @@ public abstract class PropertySource<T> {
 	 * assert sources.contains(PropertySource.named("sourceB"));
 	 * assert !sources.contains(PropertySource.named("sourceC"));
 	 * }</pre>
-	 * The returned {@code PropertySource} will throw {@code UnsupportedOperationException}
-	 * if any methods other than {@code equals(Object)}, {@code hashCode()}, and {@code toString()}
-	 * are called.
+	 * 如果调用 {@code equals(Object)}、{@code hashCode()} 和 {@code toString()}
+	 * 以外的任何方法，返回的 {@code PropertySource} 将抛出 {@code UnsupportedOperationException}。
 	 * @param name the name of the comparison {@code PropertySource} to be created and returned.
 	 */
 	public static PropertySource<?> named(String name) {
@@ -192,13 +193,10 @@ public abstract class PropertySource<T> {
 
 
 	/**
-	 * {@code PropertySource} to be used as a placeholder in cases where an actual
-	 * property source cannot be eagerly initialized at application context
-	 * creation time.  For example, a {@code ServletContext}-based property source
-	 * must wait until the {@code ServletContext} object is available to its enclosing
-	 * {@code ApplicationContext}.  In such cases, a stub should be used to hold the
-	 * intended default position/order of the property source, then be replaced
-	 * during context refresh.
+	 *{@code PropertySource} 用作在应用程序上下文创建时无法立即初始化实际属性源的情况下的占位符。
+	 * 例如，基于 {@code ServletContext} 的属性源必须等到 {@code ServletContext} 对象对其封闭的
+	 * {@code ApplicationContext} 可用。在这种情况下，应该使用存根来保存属性源的预期默认位置顺序，然后在上下文刷新期间被替换。
+	 * 参考ConfigurationPropertySources.attach(environment)相关实现
 	 * @see org.springframework.context.support.AbstractApplicationContext#initPropertySources()
 	 * @see org.springframework.web.context.support.StandardServletEnvironment
 	 * @see org.springframework.web.context.support.ServletContextPropertySource
@@ -221,8 +219,7 @@ public abstract class PropertySource<T> {
 
 
 	/**
-	 * A {@code PropertySource} implementation intended for collection comparison
-	 * purposes.
+	 * 用于集合比较目的的 {@code PropertySource} 实现
 	 *
 	 * @see PropertySource#named(String)
 	 */

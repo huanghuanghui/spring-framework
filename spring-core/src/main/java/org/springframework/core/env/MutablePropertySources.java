@@ -41,6 +41,9 @@ import org.springframework.lang.Nullable;
  */
 public class MutablePropertySources implements PropertySources {
 
+	/**
+	 * 用来存储对象中包含的子构件对象PropertySource，管理全局的PropertySource属性
+	 */
 	private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<>();
 
 
@@ -51,12 +54,12 @@ public class MutablePropertySources implements PropertySources {
 	}
 
 	/**
-	 * Create a new {@code MutablePropertySources} from the given propertySources
-	 * object, preserving the original order of contained {@code PropertySource} objects.
+	 * 从给定的 propertySources 对象创建一个新的 {@code MutablePropertySources}，保留包含的 {@code PropertySource} 对象的原始顺序。
 	 */
 	public MutablePropertySources(PropertySources propertySources) {
 		this();
 		for (PropertySource<?> propertySource : propertySources) {
+			//在最后添加一个propertySource属性
 			addLast(propertySource);
 		}
 	}
@@ -100,7 +103,7 @@ public class MutablePropertySources implements PropertySources {
 
 
 	/**
-	 * Add the given property source object with highest precedence.
+	 * 添加具有最高优先级的给定属性源对象。添加到0索引位置
 	 */
 	public void addFirst(PropertySource<?> propertySource) {
 		synchronized (this.propertySourceList) {
@@ -110,7 +113,7 @@ public class MutablePropertySources implements PropertySources {
 	}
 
 	/**
-	 * Add the given property source object with lowest precedence.
+	 * 添加元素到propertySourceList最后一位
 	 */
 	public void addLast(PropertySource<?> propertySource) {
 		synchronized (this.propertySourceList) {
@@ -120,8 +123,7 @@ public class MutablePropertySources implements PropertySources {
 	}
 
 	/**
-	 * Add the given property source object with precedence immediately higher
-	 * than the named relative property source.
+	 * 添加给定的属性源对象，其优先级立即高于命名的相对属性源。
 	 */
 	public void addBefore(String relativePropertySourceName, PropertySource<?> propertySource) {
 		assertLegalRelativeAddition(relativePropertySourceName, propertySource);
