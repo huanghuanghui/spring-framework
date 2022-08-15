@@ -561,7 +561,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			// 准备BeanFactory
+			// 准备BeanFactory，注册Spel表达式解析，注册Processor扫描Aware，注册基础的类，例如BeanFactory/ApplicationContext
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -644,11 +644,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 
-		// Initialize any placeholder property sources in the context environment.
+		// Initialize any placeholder property sources in the context environment.重写这个方法，将授权码放入environment
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
-		// see ConfigurablePropertyResolver#setRequiredProperties
+		// see ConfigurablePropertyResolver#setRequiredProperties 做一些项目启动前必须参数校验，比如如上的授权码
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
@@ -805,6 +805,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * 实例化并调用所有已注册的 BeanFactoryPostProcessor bean，如果给出，则遵守显式顺序。 <p>必须在单例实例化之前调用。
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		//执行现在BeanFactory中所有的BeanFactoryPostProcessor
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime

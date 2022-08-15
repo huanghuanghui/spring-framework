@@ -21,11 +21,9 @@ import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.cache.Cache;
 
-import javax.ejb.Init;
 
 /**
  * Simple cache manager working against a given collection of caches.

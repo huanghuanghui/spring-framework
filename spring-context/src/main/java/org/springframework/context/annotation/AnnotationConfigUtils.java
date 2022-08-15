@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor;
@@ -162,13 +163,13 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
-
+		//最重要的一个bean factory post processor，会加载@ComponentScan
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-
+		//BeanPostProcessor @Autowired 注入的bean后置处理器
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -176,6 +177,10 @@ public abstract class AnnotationConfigUtils {
 		}
 
 		// Check for Jakarta Annotations support, and if present add the CommonAnnotationBeanPostProcessor.
+		//jakarta 校验，Springboot 3.0使用Spring 6，将弃用javax，改为使用jakarta注解规范，
+		// 比如以前的@Resource/@PostConstruct这种，他就不扫了，要改成jakarta包下的相应注解
+		//查看jakartaAnnotationsPresent变量的提交记录可见：Retain support for legacy PostConstruct/PreDestroy/Inject variants
+		// Also removes JAX-WS support from CommonAnnotationBeanPostProcessor.所以后续如果有升级boot3.0，也要注意注解转换
 		if (jakartaAnnotationsPresent && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
 			def.setSource(source);
@@ -211,13 +216,20 @@ public abstract class AnnotationConfigUtils {
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, PERSISTENCE_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-
+		/**
+		 * EventListenerMethodProcessor 是 Spring 事件机制中非常重要的一个组件。
+		 * 它管理了一组EventListenerFactory组件,用来将应用中每个使用@EventListener注解定义的事件监听方法变成
+		 * 一个ApplicationListener实例注册到容器。换句话讲，框架开发者，或者应用开发者使用注解@EventListener定义的事件处理方法，
+		 * 如果没有EventListenerMethodProcessor的发现和注册，是不会被容器看到和使用的。
+		 */
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(EventListenerMethodProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_PROCESSOR_BEAN_NAME));
 		}
-
+		/**
+		 * @EventListener 注解修饰的事件处理，在Spring boot中大量被使用
+		 */
 		if (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(DefaultEventListenerFactory.class);
 			def.setSource(source);

@@ -54,6 +54,18 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+		/**
+		 * - config.isOptimize：表示是否使用了优化策略，配置的属性optimize值决定，默认false
+		 * - config.isProxyTargetClass：表示是否是代理目标类，配置的属性proxy-target-class值决定，默认false
+		 * - hasNoUserSuppliedProxyInterfaces：就是在判断代理的对象是否有实现接口，如果被代理的是接口，会返回false，普通类，都是返回true，会默认使用cglib
+		 * 									只有普通class/实现了接口，且接口为SpringProxy的子类，自己指定代理模式，才会返回true
+		 * 									否则都是false
+		 *
+		 * 总结：
+		 * 1、如果目标对象实现了接口，默认情况下会采用JDK的动态代理实现AOP
+		 * 2、如果目标对象实现了接口，可以强制使用CGLIB实现AOP
+		 * 3、如果目标对象没有实现了接口，必须采用CGLIB库，spring会自动在JDK动态代理和CGLIB之间转换
+		 */
 		if (!NativeDetector.inNativeImage() &&
 				(config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config))) {
 			Class<?> targetClass = config.getTargetClass();
@@ -62,9 +74,11 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 				throw new AopConfigException("TargetSource cannot determine target class: " +
 						"Either an interface or a target is required for proxy creation.");
 			}
+			//接口 代理类 lambda类，使用JdkDynamicAopProxy
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass) || ClassUtils.isLambdaClass(targetClass)) {
 				return new JdkDynamicAopProxy(config);
 			}
+			//否则使用Cglib
 			return new ObjenesisCglibAopProxy(config);
 		}
 		else {
@@ -73,6 +87,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 	}
 
 	/**
+	 * 确定提供的 {@link AdvisedSupport} 是否仅指定了 {@link org.springframework.aop.SpringProxy} 接口（或根本没有指定代理接口）
 	 * Determine whether the supplied {@link AdvisedSupport} has only the
 	 * {@link org.springframework.aop.SpringProxy} interface specified
 	 * (or no proxy interfaces specified at all).

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date: 2021/9/28 12:21 下午
  * @Description TODO
  */
-@Configuration
+//@Configuration
 public class AppConfiguration {
 
     @Bean

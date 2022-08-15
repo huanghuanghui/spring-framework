@@ -66,6 +66,8 @@ class ComponentScanAnnotationParser {
 
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, String declaringClass) {
+		//思考一下，为什么这里不用AnnotationConfigApplicationContext()类中，this拉起的scanner对象，而是要每次一进入这个方法就new一个？
+		//针对每个不通的componentScan，构建一个自己的扫描，让扫描支持自己componentScan的可配置
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 

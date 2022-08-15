@@ -1,5 +1,6 @@
 package org.hhh.lazy;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -7,13 +8,7 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/10/23 11:15 下午
  * @Description TODO
  */
-@Component
-public class MyLazyBean{
+public interface MyLazyService {
 
-
-
-    public void test(){
-        System.out.println("------myLazyBean------");
-    }
-
+	void test();
 }

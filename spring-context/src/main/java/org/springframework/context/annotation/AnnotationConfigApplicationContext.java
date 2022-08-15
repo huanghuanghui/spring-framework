@@ -66,9 +66,13 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext() {
 		StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
-		//生成开天辟地的6个类的BeanDefinition
+		//生成开天辟地的6个类的BeanDefinition，创建reader，提供registerBean功能
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		//提供一个扩展点，当reader创建结束后，我们可以在StartupStep中自定义添加一些功能，比如添加我们自己的registerPostProcessor
 		createAnnotatedBeanDefReader.end();
+		//注册了一个bean definition scanner，并注册其相应的扫描规则，供后续parse使用，注册AnnotationBeanNameGenerator，生成bean名称
+		//这个scanner的注册，只是为了可以不使用@ComponentScan也可以启动项目，根据传入的base package进行扫描，具体查看下面代码的构造方法
+		//@see this.scanner.scan(basePackages);后续每个componentScan的扫描，都会自己new 一个相应对象
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 

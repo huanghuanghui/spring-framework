@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
  * @Description TODO
  */
 @Component
-public class MyLazyBean{
+public class MyLazyServiceImpl implements MyLazyService{
 
-
-
-    public void test(){
-        System.out.println("------myLazyBean------");
-    }
-
+	@Override
+	public void test() {
+		System.out.println("MyLazyServiceImpl test");
+	}
 }

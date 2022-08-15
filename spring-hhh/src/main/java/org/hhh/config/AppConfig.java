@@ -1,5 +1,7 @@
 package org.hhh.config;
 
+import org.hhh.component.AService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 /**
  * @Author: hhh
