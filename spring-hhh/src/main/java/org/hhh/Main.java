@@ -38,7 +38,7 @@ public class Main {
     public static void main(String[] args){
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
 		UseMyLazyBean bean = annotationConfigApplicationContext.getBean(UseMyLazyBean.class);
-		bean.test0();
+//		bean.test0();
 		bean.test1();
 		bean.test2();
 	}

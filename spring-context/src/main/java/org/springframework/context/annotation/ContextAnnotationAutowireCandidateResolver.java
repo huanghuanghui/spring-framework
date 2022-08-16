@@ -51,7 +51,11 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
 	@Override
 	@Nullable
 	public Object getLazyResolutionProxyIfNecessary(DependencyDescriptor descriptor, @Nullable String beanName) {
-		return (isLazy(descriptor) ? buildLazyResolutionProxy(descriptor, beanName) : null);
+		boolean lazy = isLazy(descriptor);
+		if(lazy){
+			return buildLazyResolutionProxy(descriptor, beanName);
+		}
+		return null;
 	}
 
 	protected boolean isLazy(DependencyDescriptor descriptor) {

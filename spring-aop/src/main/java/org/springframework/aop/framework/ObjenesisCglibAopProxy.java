@@ -58,7 +58,7 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 		Object proxyInstance = null;
 
 		if (objenesis.isWorthTrying()) {
-			try {
+			try {//生成带EnhanceBySpringGCLIB的类实例
 				proxyInstance = objenesis.newInstance(proxyClass, enhancer.getUseCache());
 			}
 			catch (Throwable ex) {

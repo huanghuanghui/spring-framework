@@ -191,9 +191,9 @@ class CglibAopProxy implements AopProxy, Serializable {
 			enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(classLoader));
-
+			//核心逻辑，获取代理回调方法，生成cglib代理责任链
 			Callback[] callbacks = getCallbacks(rootClass);
-			Class<?>[] types = new Class<?>[callbacks.length];
+			Class<?>[] types = new Class<?>[callbacks.length];//组装代理拦截责任链
 			for (int x = 0; x < types.length; x++) {
 				types[x] = callbacks[x].getClass();
 			}
@@ -287,7 +287,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 		boolean isFrozen = this.advised.isFrozen();
 		boolean isStatic = this.advised.getTargetSource().isStatic();
 
-		// Choose an "aop" interceptor (used for AOP calls).
+		// Choose an "aop" interceptor (used for AOP calls).加入DynamicAdvisedInterceptor
 		Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised);
 
 		// Choose a "straight to target" interceptor. (used for calls that are
@@ -308,10 +308,10 @@ class CglibAopProxy implements AopProxy, Serializable {
 		// unadvised calls to static targets that cannot return this).
 		Callback targetDispatcher = (isStatic ?
 				new StaticDispatcher(this.advised.getTargetSource().getTarget()) : new SerializableNoOp());
-
+		//核心逻辑：默认加了7条过滤器链条
 		Callback[] mainCallbacks = new Callback[] {
-				aopInterceptor,  // for normal advice
-				targetInterceptor,  // invoke target without considering advice, if optimized
+				aopInterceptor,  // 一般的织入
+				targetInterceptor,  // 如果优化，则在不考虑建议的情况下调用目标
 				new SerializableNoOp(),  // no override for methods mapped to this
 				targetDispatcher, this.advisedDispatcher,
 				new EqualsInterceptor(this.advised),
@@ -688,9 +688,11 @@ class CglibAopProxy implements AopProxy, Serializable {
 					oldProxy = AopContext.setCurrentProxy(proxy);
 					setProxyContext = true;
 				}
-				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
+				// 核心逻辑，获取被代理的真实对象的逻辑
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
+				//核心逻辑，会获取切面/切点的责任链，AdvisorChainFactory去组装责任链的执行流程，下面的代码判断chain.isEmpty()，
+				//代表没有切点切面，那么直接执行invokeMethod源代码逻辑，否则，组装责任链，放入责任链的metedCache
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
@@ -701,11 +703,14 @@ class CglibAopProxy implements AopProxy, Serializable {
 					// it does nothing but a reflective operation on the target, and no hot
 					// swapping or fancy proxying.
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
+					//核心逻辑，使用反射执行需要执行的代码
 					retVal = invokeMethod(target, method, argsToUse, methodProxy);
 				}
 				else {
-					// We need to create a method invocation...
-					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
+					// 创建cglib代理，执行proceed()
+					CglibMethodInvocation cglibMethodInvocation = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy);
+					//递归执行责任链上的所有方法，达到切面的目的
+					retVal = cglibMethodInvocation.proceed();
 				}
 				retVal = processReturnType(proxy, target, method, retVal);
 				return retVal;

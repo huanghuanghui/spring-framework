@@ -19,19 +19,19 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UseMyLazyBean {
+//    @Autowired
+//    @Lazy//接口，有实现类，JDK动态代理
+//    private MyLazyService myLazyService;
     @Autowired
-    @Lazy
-    private MyLazyService myLazyService;
-    @Autowired
-    @Lazy
+    @Lazy//非接口，使用默认的CGLIB
     private MyLazyBean myLazyBean;
-	@Autowired
+	@Autowired//接口，无代理，根据类型NormalService找到实现，反射inject
 	private NormalService normalService;
 
 
-    public void test0(){
-		myLazyService.test();
-    }
+//    public void test0(){
+//		myLazyService.test();
+//    }
 
     public void test1(){
         myLazyBean.test();

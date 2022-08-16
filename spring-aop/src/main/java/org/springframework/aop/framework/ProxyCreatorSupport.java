@@ -58,6 +58,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 
 
 	/**
+	 * 自定义AopProxyFactory，比如我们想重写Spring中的proxy模式，全部都用jdk代理用来提升效率，那就可以进行设置
 	 * Customize the AopProxyFactory, allowing different strategies
 	 * to be dropped in without changing the core framework.
 	 * <p>Default is {@link DefaultAopProxyFactory}, using dynamic JDK
@@ -102,7 +103,9 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 		if (!this.active) {
 			activate();
 		}
-		return getAopProxyFactory().createAopProxy(this);
+		AopProxyFactory aopProxyFactory = getAopProxyFactory();
+		AopProxy aopProxy = aopProxyFactory.createAopProxy(this);
+		return aopProxy;
 	}
 
 	/**

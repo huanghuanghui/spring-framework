@@ -60,7 +60,6 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 		 * - hasNoUserSuppliedProxyInterfaces：就是在判断代理的对象是否有实现接口，如果被代理的是接口，会返回false，普通类，都是返回true，会默认使用cglib
 		 * 									只有普通class/实现了接口，且接口为SpringProxy的子类，自己指定代理模式，才会返回true
 		 * 									否则都是false
-		 *
 		 * 总结：
 		 * 1、如果目标对象实现了接口，默认情况下会采用JDK的动态代理实现AOP
 		 * 2、如果目标对象实现了接口，可以强制使用CGLIB实现AOP
@@ -71,8 +70,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 			Class<?> targetClass = config.getTargetClass();
 			//如果是一个接口，必须要有实现类，不然会无法创建代理
 			if (targetClass == null) {
-				throw new AopConfigException("TargetSource cannot determine target class: " +
-						"Either an interface or a target is required for proxy creation.");
+				throw new AopConfigException("TargetSource cannot determine target class: " + "Either an interface or a target is required for proxy creation.");
 			}
 			//接口 代理类 lambda类，使用JdkDynamicAopProxy
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass) || ClassUtils.isLambdaClass(targetClass)) {
