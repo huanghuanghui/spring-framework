@@ -1,14 +1,13 @@
 package org.hhh.component;
 
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.stereotype.Service;
 
 /**
  * @Author: hhh
  * @Date: 2021/9/28 12:21 下午
  * @Description TODO
  */
-@Service
+//@Service
 public abstract class LookUpService {
 
 
