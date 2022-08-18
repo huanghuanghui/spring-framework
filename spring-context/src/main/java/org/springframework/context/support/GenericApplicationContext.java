@@ -288,11 +288,15 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws IllegalStateException {
-		//先注释不让刷新
-//		if (!this.refreshed.compareAndSet(false, true)) {
-//			throw new IllegalStateException(
-//					"GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once");
-//		}
+		//默认刷新过就不让再次刷新了，Springboot也一样，只是在Spring cloud中，提供了Refresh Scope的支持
+		//Refresh Scope也并不是直接调用这个refresh方法，而是将打了@RefreshScope注解的类，做了一层代理，将类设置为懒加载
+		//在第一次加载的时候，才会进行实例化，Spring cloud 自己注册了一个监听器，去监听Refresh事件，接收到事件通知后，直接将bean销毁，
+		//然后走代理，再次生成bean，这样就能保证配置的实时更新
+		//Spring提供了这个扩展，肯定代表它可以刷新，但是如果我们自己重写了这个方法，那么代码在线上运行时，容器被重建就是个大问题了
+		if (!this.refreshed.compareAndSet(false, true)) {
+			throw new IllegalStateException(
+					"GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once");
+		}
 		this.beanFactory.setSerializationId(getId());
 	}
 

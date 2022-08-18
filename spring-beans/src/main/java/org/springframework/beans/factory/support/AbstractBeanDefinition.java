@@ -188,6 +188,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private MutablePropertyValues propertyValues;
 
+	/**
+	 * 用来处理lookup-mehtod和replace-method
+	 */
 	private MethodOverrides methodOverrides = new MethodOverrides();
 
 	@Nullable

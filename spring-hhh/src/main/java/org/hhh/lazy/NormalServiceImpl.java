@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
  * @Date: 2021/10/23 11:15 下午
  * @Description TODO
  */
-@Service
+//@Service
 public class NormalServiceImpl implements NormalService{
 
 

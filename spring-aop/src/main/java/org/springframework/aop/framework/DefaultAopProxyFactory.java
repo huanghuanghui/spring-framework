@@ -58,8 +58,8 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 		 * - config.isOptimize：表示是否使用了优化策略，配置的属性optimize值决定，默认false
 		 * - config.isProxyTargetClass：表示是否是代理目标类，配置的属性proxy-target-class值决定，默认false
 		 * - hasNoUserSuppliedProxyInterfaces：就是在判断代理的对象是否有实现接口，如果被代理的是接口，会返回false，普通类，都是返回true，会默认使用cglib
-		 * 									只有普通class/实现了接口，且接口为SpringProxy的子类，自己指定代理模式，才会返回true
-		 * 									否则都是false
+		 * 									对于我们的切点/切面，返回true，所以切面切点，一定会进这个判断
+		 * 									只有普通class/实现了接口，且接口为SpringProxy的子类，自己指定代理模式，才会返回true，否则都是false
 		 * 总结：
 		 * 1、如果目标对象实现了接口，默认情况下会采用JDK的动态代理实现AOP
 		 * 2、如果目标对象实现了接口，可以强制使用CGLIB实现AOP

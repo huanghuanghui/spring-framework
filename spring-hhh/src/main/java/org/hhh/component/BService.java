@@ -18,7 +18,5 @@ public class BService implements BeanPostProcessor {
 
     public void test(){
         System.out.println("------------------------------------------------------B Autowired------------------------------------------------------");
-        aService.test();
-
     }
 }

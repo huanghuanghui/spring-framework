@@ -180,6 +180,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			this.instantiationStrategy = new SimpleInstantiationStrategy();
 		}
 		else {
+			//在后续，获取bean初始化策略中会使用到，CglibSubclassingInstantiationStrategy#instantiate实例化bean
 			this.instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 		}
 	}
@@ -576,7 +577,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
-			//实例化bean，转化为bean Wapper，推断构造方法，使用哪种方式生成bean，如果没有自定义构造，则会使用默认的构造方法，调用Java jdk 使用空仓构造示例化一个对象
+			//实例化bean，转化为bean Wapper，推断构造方法，使用哪种方式生成bean，如果没有自定义构造，则会使用默认的构造方法，
+			// 调用Java jdk 使用空仓构造示例化一个对象
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		Object bean = instanceWrapper.getWrappedInstance();
@@ -1489,8 +1491,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 			checkDependencies(beanName, mbd, filteredPds, pvs);
 		}
-
-		if (pvs != null) {//将自动装配auto wired by type 与ByName的属性，装配给类
+		//将自动装配auto wired by type 与ByName的属性，装配给类
+		if (pvs != null) {
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}

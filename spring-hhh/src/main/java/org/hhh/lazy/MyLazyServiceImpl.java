@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/10/23 11:15 下午
  * @Description TODO
  */
-@Component
+//@Component
 public class MyLazyServiceImpl implements MyLazyService{
 
 	@Override

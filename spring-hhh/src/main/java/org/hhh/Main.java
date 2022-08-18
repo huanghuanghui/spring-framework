@@ -31,15 +31,15 @@ public class Main {
 //    processCommonDefinitionAnnotations中的@Lazy @Primary @DependsOn @Role
 
 
-//    public static void main(String[] args){
-//		new AnnotationConfigApplicationContext(AppConfig.class);
-//	}
-
     public static void main(String[] args){
-		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
-		UseMyLazyBean bean = annotationConfigApplicationContext.getBean(UseMyLazyBean.class);
-//		bean.test0();
-		bean.test1();
-		bean.test2();
+		new AnnotationConfigApplicationContext(AppConfig.class);
 	}
+
+//    public static void main(String[] args){
+//		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+//		UseMyLazyBean bean = annotationConfigApplicationContext.getBean(UseMyLazyBean.class);
+////		bean.test0();
+//		bean.test1();
+//		bean.test2();
+//	}
 }

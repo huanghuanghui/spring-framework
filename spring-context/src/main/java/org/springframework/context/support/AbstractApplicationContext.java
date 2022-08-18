@@ -558,14 +558,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Prepare this context for refreshing.
 			prepareRefresh();
 
-			// Tell the subclass to refresh the internal bean factory.
+			// 获取bean factory，判断被配置的bean factory能不能被刷新
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// 准备BeanFactory，注册Spel表达式解析，注册Processor扫描Aware，注册基础的类，例如BeanFactory/ApplicationContext
 			prepareBeanFactory(beanFactory);
 
 			try {
-				// Allows post-processing of the bean factory in context subclasses.
+				// 空方法，自己扩展，允许在我们自己实现的ApplicationContext中对 bean postProcess处理，Springboot扩展了该方法
+				//注册了WebApplicationContextServletContextAwareProcessor 用来初始化 servlet相关内容
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
@@ -581,16 +582,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
-				// Initialize message source for this context.
+				// Initialize message source for this context. 国际化
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
 				initApplicationEventMulticaster();
 
-				// Initialize other special beans in specific context subclasses.
+				// 空方法，Springboot扩展该方法，实例化了WebServer，内嵌的tomcat/jetty/undertone/jboos等
 				onRefresh();
 
-				// Check for listener beans and register them.
+				// Check for listener beans and register them. 添加实现ApplicationListener的bean
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
